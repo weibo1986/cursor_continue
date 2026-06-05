@@ -15,6 +15,7 @@
     --grey: #86868b;
     --bg: #fff;
     --bg2: #f5f5f7;
+    --line: rgba(0,0,0,0.1);
     --brand: #ff7a18;
     --brand2: #ff9d4d;
     --nav-h: 48px;
@@ -116,7 +117,7 @@
     display: grid; place-items: center; color: #fff; font-weight: 800; font-size: 12px;
     box-shadow: 0 3px 10px rgba(255,122,24,0.35);
   }
-  .nav-menu { display: flex; gap: 32px; }
+  .nav-menu { display: flex; gap: 32px; align-items: center; }
   .nav-menu a {
     font-size: 12px; color: var(--ink); opacity: .82;
     font-weight: 400; position: relative; transition: opacity .2s;
@@ -127,8 +128,53 @@
   }
   .nav-menu a:hover { opacity: 1; }
   .nav-menu a:hover::after { width: 100%; }
-  @media (max-width: 760px){ .nav-menu { gap: 18px; } }
-  @media (max-width: 560px){ .nav-menu a:nth-child(n+4){ display:none; } }
+
+  /* ---- hamburger (mobile nav) ---- */
+  .nav-burger {
+    display: none; width: 36px; height: 36px; border-radius: 8px;
+    background: none; border: none; cursor: pointer; padding: 0;
+    align-items: center; justify-content: center; gap: 4px; flex-direction: column;
+  }
+  .nav-burger span {
+    display: block; width: 18px; height: 2px; background: var(--ink); border-radius: 2px;
+    transition: transform .25s var(--ease), opacity .15s ease;
+  }
+  .nav-burger.open span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+  .nav-burger.open span:nth-child(2) { opacity: 0; }
+  .nav-burger.open span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+  .nav-scrim {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.35);
+    z-index: 9990; opacity: 0; pointer-events: none; transition: opacity .25s ease;
+    -webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px);
+  }
+  .nav-scrim.show { opacity: 1; pointer-events: auto; }
+
+  @media (max-width: 720px) {
+    .nav-burger { display: inline-flex; }
+    .nav-menu {
+      /* 紧贴导航栏底部展开，避免和温馨提示/顶栏错位 */
+      position: absolute; top: 100%; right: 0; left: 0;
+      flex-direction: column; gap: 0; align-items: stretch;
+      background: rgba(251,251,253,0.98);
+      backdrop-filter: saturate(180%) blur(20px);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      padding: 6px 0; z-index: 9995;
+      border-bottom: 1px solid var(--line);
+      transform-origin: top center;
+      transform: scaleY(0); opacity: 0;
+      transition: transform .22s var(--ease), opacity .18s ease;
+      box-shadow: 0 18px 32px rgba(0,0,0,0.12);
+      max-height: calc(100vh - var(--nav-h) - 60px);
+      overflow-y: auto;
+    }
+    .nav-menu.open { transform: scaleY(1); opacity: 1; }
+    .nav-menu a {
+      font-size: 15px; padding: 14px 22px; opacity: 1;
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+    }
+    .nav-menu a:last-child { border-bottom: none; }
+    .nav-menu a::after { display: none; }
+  }
 
   /* ---------- SECTION ---------- */
   .section {
@@ -203,7 +249,6 @@
     display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
     max-width: 1024px; margin: 14px auto 0; padding: 0 12px;
   }
-  /* extra breathing room around the standalone two-up tiles */
   body > .grid2 { margin: 40px auto 80px; }
   @media (max-width: 600px){ body > .grid2 { margin: 28px auto 56px; } }
   @media (max-width: 734px){ .grid2 { grid-template-columns: 1fr; } }
@@ -292,21 +337,237 @@
   .feat h4 { font-size: 19px; font-weight: 600; margin: 0 0 8px; }
   .feat p { font-size: 15px; color: var(--grey); line-height: 1.55; }
 
-  /* ---------- STEPS ---------- */
-  .steps-wrap { max-width: 760px; margin: 50px auto 0; text-align:left; position: relative; }
-  .step {
-    display:flex; gap:22px; padding: 28px 0; border-top: 1px solid rgba(0,0,0,0.1);
+  /* ---------- DOCS SECTION (merged from getting-started.html) ---------- */
+  /* override centered section text inside docs layout area */
+  #docs { padding-top: 80px; padding-bottom: 90px; }
+  .docs-layout {
+    max-width: 1120px; margin: 40px auto 0;
+    display: grid; grid-template-columns: 240px 1fr; gap: 56px;
+    text-align: left; padding: 0 8px;
   }
-  .step:last-child { border-bottom: 1px solid rgba(0,0,0,0.1); }
-  .step .n {
-    flex-shrink:0; width:40px; height:40px; border-radius:50%;
-    background: linear-gradient(135deg, var(--brand), var(--brand2)); color:#fff;
-    display:grid; place-items:center; font-size:17px; font-weight:700;
-    box-shadow: 0 6px 16px rgba(255,122,24,0.35);
+
+  /* sticky sidebar */
+  .docs-sidebar {
+    position: sticky; top: calc(var(--nav-h) + 24px); align-self: start;
+    max-height: calc(100vh - var(--nav-h) - 48px);
+    overflow-y: auto; padding: 4px 6px 24px 0;
   }
-  .step h4 { font-size:21px; font-weight:600; margin-bottom:4px; }
-  .step p { font-size:16px; color:var(--grey); line-height:1.55; }
-  .step code, .step kbd { font-size:14px; }
+  .docs-sidebar .side-title {
+    font-size: 13px; font-weight: 700; color: var(--ink);
+    letter-spacing: 0.4px; padding: 0 12px 14px;
+  }
+  .menu-group { margin-bottom: 22px; }
+  .menu-group > .g-title {
+    font-size: 11px; font-weight: 600; color: var(--grey);
+    text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px;
+    padding-left: 12px;
+  }
+  .menu-group ul { list-style: none; margin: 0; padding: 0; }
+  .menu-group li { margin: 0; }
+  .menu-group li a {
+    display: block; font-size: 14.5px; color: var(--ink);
+    padding: 7px 12px; border-radius: 8px; transition: background .15s, color .15s;
+    line-height: 1.4;
+  }
+  .menu-group li a:hover { background: var(--bg2); }
+  .menu-group li a.active {
+    background: rgba(255,122,24,0.12); color: var(--brand); font-weight: 600;
+  }
+
+  /* mobile drawer */
+  .docs-menu-toggle {
+    display: none;
+    margin: 16px auto 0;
+    background: var(--bg2); border: 1px solid var(--line); border-radius: 10px;
+    padding: 10px 16px; font: inherit; font-size: 14px; font-weight: 600;
+    color: var(--ink); cursor: pointer; gap: 8px; align-items: center;
+  }
+  .docs-menu-toggle b { font-size: 16px; }
+  .docs-scrim {
+    position: fixed; inset: var(--nav-h) 0 0 0; background: rgba(0,0,0,0.3);
+    z-index: 8000; opacity: 0; pointer-events: none; transition: opacity .25s;
+  }
+  .docs-scrim.show { opacity: 1; pointer-events: auto; }
+
+  @media (max-width: 900px) {
+    .docs-layout { grid-template-columns: 1fr; gap: 0; }
+    .docs-menu-toggle { display: inline-flex; }
+    .docs-sidebar {
+      position: fixed; top: var(--nav-h); left: 0; width: 86%; max-width: 320px;
+      height: calc(100vh - var(--nav-h)); background: var(--bg); z-index: 9000;
+      padding: 24px 18px 60px; max-height: none;
+      border-right: 1px solid var(--line);
+      transform: translateX(-105%); transition: transform .28s ease;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+    }
+    .docs-sidebar.open { transform: translateX(0); }
+  }
+
+  /* doc subsections */
+  .doc-section { scroll-margin-top: calc(var(--nav-h) + 24px); }
+  .doc-section + .doc-section { margin-top: 48px; }
+  .doc-section h3.doc-title {
+    font-size: 30px; font-weight: 700; letter-spacing: -0.4px; margin-bottom: 6px;
+    color: var(--ink);
+  }
+  .doc-section .lead { font-size: 17px; color: var(--grey); margin-bottom: 18px; }
+  .doc-section h4 { font-size: 19px; font-weight: 600; margin: 24px 0 8px; }
+  .doc-section p { font-size: 16px; margin: 10px 0; line-height: 1.65; }
+  .doc-section ol, .doc-section ul { margin: 12px 0 12px 4px; padding-left: 22px; }
+  .doc-section li { font-size: 16px; margin: 7px 0; line-height: 1.6; }
+  .doc-section .text-warn { color: #d93b3b; font-weight: 600; }
+
+  .callout {
+    background: rgba(0,102,204,0.06); border-left: 4px solid var(--blue);
+    border-radius: 0 12px 12px 0; padding: 14px 18px; margin: 18px 0;
+    font-size: 15px; color: #064a8f;
+  }
+
+  /* ---- requirement cards ---- */
+  .req-grid {
+    display: grid; grid-template-columns: 1fr;
+    gap: 14px; margin: 20px 0 8px;
+  }
+  .req-card {
+    border: 1px solid var(--line); border-radius: 16px; padding: 20px 22px;
+    background: #fff; transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+  }
+  .req-card:hover { transform: translateY(-3px); box-shadow: 0 12px 28px rgba(0,0,0,0.07); border-color: rgba(255,122,24,0.4); }
+  .req-card h4 { font-size: 17px; font-weight: 600; margin: 0 0 4px; }
+  .req-card p { font-size: 14px; color: var(--grey); line-height: 1.5; margin: 0; }
+  .sys-badges { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+  .sys-badges span {
+    font-size: 13px; font-weight: 500; color: var(--ink);
+    background: var(--bg2); border: 1px solid var(--line);
+    padding: 4px 12px; border-radius: 999px;
+  }
+
+  /* ---- doc figure / screenshot ---- */
+  .doc-fig { margin: 22px 0 8px; }
+  .doc-fig img {
+    display: block; width: 100%; max-width: 720px; height: auto;
+    border: 1px solid var(--line); border-radius: 14px;
+    box-shadow: 0 18px 40px rgba(0,0,0,0.12);
+    cursor: zoom-in; transition: transform .25s ease, box-shadow .25s ease;
+  }
+  .doc-fig img:hover { transform: translateY(-2px); box-shadow: 0 22px 50px rgba(0,0,0,0.16); }
+  .doc-fig figcaption {
+    font-size: 13px; color: var(--grey); margin-top: 10px; text-align: center;
+  }
+
+  /* ---- doc FAQ accordion (inside docs) ---- */
+  .doc-faq { margin-top: 10px; }
+  .doc-faq details {
+    border: 1px solid var(--line); border-radius: 12px; margin-bottom: 12px;
+    padding: 2px 18px; transition: box-shadow .2s ease;
+  }
+  .doc-faq details[open] { box-shadow: 0 10px 26px rgba(0,0,0,0.06); }
+  .doc-faq summary {
+    cursor: pointer; list-style: none; padding: 16px 0;
+    font-size: 17px; font-weight: 600; color: var(--ink);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .doc-faq summary::-webkit-details-marker { display: none; }
+  .doc-faq summary::before {
+    content: "Q"; flex-shrink: 0;
+    width: 24px; height: 24px; border-radius: 6px;
+    background: rgba(255,122,24,0.14); color: var(--brand);
+    display: grid; place-items: center; font-size: 13px; font-weight: 700;
+  }
+  .doc-faq summary::after {
+    content: "+"; margin-left: auto; font-size: 22px; font-weight: 300;
+    color: var(--grey); transition: transform .25s ease;
+  }
+  .doc-faq details[open] summary::after { transform: rotate(45deg); }
+  .doc-faq .a { padding: 0 0 18px 34px; font-size: 15px; color: var(--grey); line-height: 1.65; }
+  .doc-faq .a p { margin: 0 0 10px; }
+
+  /* ---- FAQ search box ---- */
+  .faq-search { position: relative; margin: 4px 0 18px; }
+  .faq-search input {
+    width: 100%; font: inherit; font-size: 15px; color: var(--ink);
+    padding: 12px 40px 12px 42px;
+    background: var(--bg2); border: 1px solid var(--line); border-radius: 12px;
+    outline: none; transition: border-color .2s, box-shadow .2s, background .2s;
+  }
+  .faq-search input::placeholder { color: var(--grey); }
+  .faq-search input:focus {
+    background: #fff; border-color: rgba(255,122,24,0.55);
+    box-shadow: 0 0 0 4px rgba(255,122,24,0.12);
+  }
+  .faq-search svg {
+    position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+    width: 18px; height: 18px; color: var(--grey); pointer-events: none;
+  }
+  .faq-search .fs-clear {
+    position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+    background: rgba(0,0,0,0.08); border: none; cursor: pointer;
+    width: 22px; height: 22px; border-radius: 50%;
+    color: var(--ink); font-size: 14px; line-height: 1; font-weight: 300;
+    display: none; align-items: center; justify-content: center; padding: 0;
+  }
+  .faq-search .fs-clear:hover { background: rgba(0,0,0,0.16); }
+  .faq-search.has-text .fs-clear { display: inline-flex; }
+  .faq-search mark {
+    background: rgba(255,122,24,0.25); color: inherit; border-radius: 3px; padding: 0 2px;
+  }
+  .doc-faq details.faq-hide { display: none; }
+  .faq-empty {
+    display: none; padding: 22px; text-align: center;
+    color: var(--grey); font-size: 14px;
+    border: 1px dashed var(--line); border-radius: 12px;
+  }
+  .faq-empty.show { display: block; }
+
+  /* ---- 售后群卡片 ---- */
+  .group-card {
+    margin: 24px 0 0; padding: 22px 24px;
+    border-radius: 16px; color: #fff; text-align: left;
+    background:
+      radial-gradient(420px 220px at 0% 0%, rgba(255,255,255,0.18), transparent 70%),
+      linear-gradient(135deg, #0066cc, #2997ff);
+    box-shadow: 0 16px 40px rgba(0,102,204,0.25);
+    display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
+  }
+  .group-card .gc-text { flex: 1; min-width: 240px; }
+  .group-card .gc-text h4 { font-size: 18px; font-weight: 700; margin: 0 0 4px; color: #fff; }
+  .group-card .gc-text p { font-size: 14px; color: rgba(255,255,255,0.88); margin: 0; line-height: 1.55; }
+  .group-card .gc-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: #fff; color: #0066cc; font-weight: 600; font-size: 14.5px;
+    padding: 10px 20px; border-radius: 999px; white-space: nowrap;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+    transition: transform .2s ease, box-shadow .2s ease;
+  }
+  .group-card .gc-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 22px rgba(0,0,0,0.2); }
+  .group-card .gc-btn::after { content: "›"; font-size: 18px; line-height: 1; }
+  @media (max-width: 560px) {
+    .group-card { padding: 18px 20px; }
+    .group-card .gc-btn { padding: 10px 18px; font-size: 13.5px; }
+  }
+
+  /* ---- lightbox (click to zoom) ---- */
+  .lightbox {
+    position: fixed; inset: 0; z-index: 10001;
+    background: rgba(0,0,0,0.85);
+    display: flex; align-items: center; justify-content: center;
+    padding: 40px; opacity: 0; pointer-events: none;
+    transition: opacity .25s ease; cursor: zoom-out;
+    -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px);
+  }
+  .lightbox.open { opacity: 1; pointer-events: auto; }
+  .lightbox img {
+    max-width: 95%; max-height: 92%; border-radius: 12px;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+    transform: scale(.96); transition: transform .25s ease;
+  }
+  .lightbox.open img { transform: scale(1); }
+  .lightbox .lb-close {
+    position: absolute; top: 22px; right: 28px; color: #fff;
+    font-size: 34px; line-height: 1; cursor: pointer; opacity: .8;
+    background: none; border: none; font-weight: 300;
+  }
+  .lightbox .lb-close:hover { opacity: 1; }
 
   /* ---------- PRICING ---------- */
   .price-card { position: relative; }
@@ -321,29 +582,8 @@
     box-shadow: 0 4px 12px rgba(255,122,24,0.5);
   }
 
-  /* ---------- FAQ ---------- */
-  .faq { max-width: 760px; margin: 44px auto 0; text-align:left; }
-  .faq details {
-    border-bottom: 1px solid rgba(0,0,0,0.1);
-    transition: background .25s var(--ease);
-  }
-  .faq details[open] { background: linear-gradient(180deg, rgba(0,102,204,0.03), transparent); }
-  .faq summary {
-    cursor:pointer; list-style:none; padding: 22px 4px;
-    font-size: 19px; font-weight: 500; color: var(--ink);
-    display:flex; align-items:center; justify-content:space-between;
-    transition: color .2s;
-  }
-  .faq summary:hover { color: var(--blue); }
-  .faq summary::-webkit-details-marker { display:none; }
-  .faq summary::after { content:"+"; font-size:26px; font-weight:300; color:var(--blue); transition:transform .3s var(--ease); }
-  .faq details[open] summary::after { transform: rotate(45deg); }
-  .faq .ans { padding: 0 4px 22px; font-size:16px; color:var(--grey); line-height:1.6; max-width: 640px; }
-
   /* ---------- CTA BAND ---------- */
-  .cta-band {
-    max-width: 1024px; margin: 0 auto; padding: 0 12px;
-  }
+  .cta-band { max-width: 1024px; margin: 0 auto; padding: 0 12px; }
   .cta-inner {
     border-radius: 26px; padding: 70px 30px; text-align: center;
     background:
@@ -395,6 +635,48 @@
     .reveal { opacity: 1; transform: none; transition: none; }
     .blob, .grad-text, .cc-btn { animation: none !important; }
   }
+
+  /* ============== MOBILE COMPATIBILITY FINE-TUNES ============== */
+  @media (max-width: 600px) {
+    .hero { padding-top: 56px; }
+    .hero .blob { display: none; }
+    .hero .actions { gap: 18px; }
+    .mock { margin: 28px 12px 0; padding: 16px; border-radius: 18px; box-shadow: 0 20px 40px rgba(0,0,0,0.12); }
+    .mock-bar { margin-bottom: 14px; }
+    .bubble { font-size: 14px; padding: 9px 13px; }
+    .tile { padding: 36px 20px; border-radius: 18px; }
+    .tile h3 { font-size: 30px; }
+    .tile .sub { font-size: 17px; }
+    .feat { padding: 22px 20px; border-radius: 14px; }
+    .cta-inner { padding: 50px 22px; border-radius: 22px; }
+    .cta-inner h2 { font-size: 28px; }
+    .cta-inner p { font-size: 16px; }
+    .btn-pill { padding: 12px 26px; font-size: 15px; }
+    .lightbox { padding: 16px; }
+    .lightbox .lb-close { top: 12px; right: 14px; font-size: 30px; }
+    .doc-section h3.doc-title { font-size: 24px; }
+    .doc-section .lead { font-size: 15.5px; }
+    .doc-section p, .doc-section li { font-size: 15px; }
+    .doc-section h4 { font-size: 17px; margin: 20px 0 6px; }
+    .doc-faq summary { font-size: 16px; padding: 14px 0; }
+    .doc-faq .a { font-size: 14.5px; padding-left: 30px; }
+    .docs-toc { gap: 5px; margin: 16px auto 24px; }
+    .price-card { padding: 36px 20px; }
+    .price-card h3 { font-size: 30px; }
+    .badge-hot { top: 12px; right: 12px; font-size: 11px; padding: 4px 11px; }
+    .section { padding: 60px 18px; }
+    #docs { padding-top: 60px; padding-bottom: 60px; }
+    .docs-layout { margin-top: 20px; }
+    .feat-grid { margin-top: 36px; }
+  }
+  @media (max-width: 420px) {
+    .hero h2 { font-size: 28px; }
+    .section h2 { font-size: 28px; }
+    .section .desc { font-size: 16px; }
+    .nav-logo { font-size: 16px; }
+    .nav-logo .logo { width: 24px; height: 24px; font-size: 11px; }
+    .doc-section h3.doc-title { font-size: 21px; }
+  }
 </style>
 </head>
 <body>
@@ -411,15 +693,19 @@
   <nav class="nav" id="nav">
     <div class="nav-inner">
       <div class="nav-logo"><span class="logo">CC</span> Cursor Continue</div>
-      <div class="nav-menu">
+      <button class="nav-burger" id="navBurger" type="button" aria-label="菜单" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+      <div class="nav-menu" id="navMenu">
         <a href="#hero">概览</a>
         <a href="#features">功能</a>
-        <a href="getting-started.html">使用</a>
+        <a href="#docs">使用</a>
         <a href="#pricing">卡密</a>
-        <a href="#faq">支持</a>
+        <a href="#troubleshoot">支持</a>
       </div>
     </div>
   </nav>
+  <div class="nav-scrim" id="navScrim"></div>
 
   <!-- HERO -->
   <section class="section hero" id="hero">
@@ -430,7 +716,7 @@
     <p class="sub reveal d2">让 Cursor AI 不间断为你工作。</p>
     <p class="desc reveal d3">通过底部面板与 Cursor 保持连续对话，告别反复手动发送消息。一次配置，长效协作。</p>
     <div class="actions reveal d4">
-      <a class="link" href="getting-started.html">了解使用方法</a>
+      <a class="link" href="#docs">了解使用方法</a>
       <a class="link" href="https://a8.al" target="_blank" rel="noopener">获取卡密</a>
     </div>
 
@@ -459,7 +745,7 @@
       <h3>CC 一键发送</h3>
       <p class="sub">橙色按钮，一触即达。</p>
       <p class="desc">第一条消息用 CC 按钮发送，之后皆在面板中输入。</p>
-      <div class="actions"><a class="link" href="getting-started.html">了解更多</a></div>
+      <div class="actions"><a class="link" href="#docs">了解更多</a></div>
     </div>
   </div>
 
@@ -480,35 +766,292 @@
     </div>
   </section>
 
-  <!-- START -->
-  <section class="section" id="start">
-    <div class="eyebrow reveal">快速开始</div>
-    <h2 class="reveal d1">三步，即刻上手。</h2>
-    <p class="desc reveal d2">从安装到持续协作，只需几分钟。</p>
-    <div class="steps-wrap">
-      <div class="step reveal">
-        <div class="n">1</div>
-        <div>
-          <h4>安装插件</h4>
-          <p>打开 Cursor，<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd> 输入 <code>Extensions: Install from VSIX...</code>，选择 <code>cursor-continue-x.x.x.vsix</code>，等待自动重载。</p>
+  <!-- ============================= DOCS（合并自 getting-started.html）============================= -->
+  <section class="section" id="docs">
+    <div class="eyebrow reveal">使用文档</div>
+    <h2 class="reveal d1">完整使用指南。</h2>
+    <p class="desc reveal d2">从安装到持续协作，详细步骤一站直达。</p>
+
+    <!-- mobile menu toggle (only visible on small screens) -->
+    <button class="docs-menu-toggle" id="docsMenuToggle" type="button"><b>☰</b> 目录</button>
+
+    <div class="docs-layout">
+
+      <!-- LEFT: sticky sidebar menu -->
+      <aside class="docs-sidebar" id="docsSidebar">
+        <div class="side-title">开始使用</div>
+
+        <nav class="menu-group">
+          <div class="g-title">准备工作</div>
+          <ul>
+            <li><a href="#intro" data-sec>简介</a></li>
+            <li><a href="#requirements" data-sec>环境要求</a></li>
+          </ul>
+        </nav>
+
+        <nav class="menu-group">
+          <div class="g-title">安装与激活</div>
+          <ul>
+            <li><a href="#account" data-sec>账号设置</a></li>
+            <li><a href="#ide-settings" data-sec>IDE 设置</a></li>
+            <li><a href="#install" data-sec>安装插件</a></li>
+            <li><a href="#activate" data-sec>激活卡密</a></li>
+            <li><a href="#sync" data-sec>同步配置</a></li>
+          </ul>
+        </nav>
+
+        <nav class="menu-group">
+          <div class="g-title">开始协作</div>
+          <ul>
+            <li><a href="#first-message" data-sec>发送第一条消息</a></li>
+            <li><a href="#continue" data-sec>持续对话</a></li>
+            <li><a href="#attachments" data-sec>附件与图片</a></li>
+            <li><a href="#end" data-sec>结束对话</a></li>
+          </ul>
+        </nav>
+
+        <nav class="menu-group">
+          <div class="g-title">进阶</div>
+          <ul>
+            <li><a href="#tips" data-sec>使用技巧</a></li>
+            <li><a href="#troubleshoot" data-sec>常见问题</a></li>
+          </ul>
+        </nav>
+      </aside>
+
+      <!-- RIGHT: docs content -->
+      <main class="docs-content">
+
+      <section class="doc-section" id="intro">
+        <h3 class="doc-title">简介</h3>
+        <p class="lead">让 Cursor AI 持续工作的协作扩展。</p>
+        <p>通过底部面板与 Cursor 保持不间断对话，无需反复手动发送消息。Cursor 完成一个任务后会自动等待你的下一条指令，让协作循环不中断，把你从重复操作中解放出来。</p>
+      </section>
+
+      <section class="doc-section" id="requirements">
+        <h3 class="doc-title">环境要求</h3>
+        <p class="lead">开始之前，请确认你的环境满足以下条件。</p>
+        <div class="req-grid">
+          <div class="req-card">
+            <h4>Cursor Pro 账号</h4>
+            <p>需登录具备 Pro 权限的 Cursor 账号，以保证 AI 功能正常使用。</p>
+          </div>
+          <div class="req-card">
+            <h4>网络代理</h4>
+            <p>使用过程中需保持稳定的网络代理连接，插件会定期验证授权。</p>
+          </div>
+          <div class="req-card">
+            <h4>操作系统</h4>
+            <p>支持主流桌面操作系统，任选其一即可。</p>
+            <div class="sys-badges">
+              <span>Windows</span>
+              <span>macOS</span>
+              <span>Linux</span>
+            </div>
+          </div>
         </div>
-      </div>
-      <div class="step reveal d1">
-        <div class="n">2</div>
-        <div>
-          <h4>激活卡密</h4>
-          <p>底部出现 <code>Cursor Continue</code> 面板，输入卡密（<code>CCG-XXXX-XXXX-XXXX-XXXX</code>），点击「激活」，看到「已激活」即完成。</p>
+      </section>
+
+      <section class="doc-section" id="account">
+        <h3 class="doc-title">账号设置</h3>
+        <p class="lead">开启账号超额，保证额度用尽后 AI 仍可继续工作。</p>
+        <p>在 Cursor 账号设置中开启「超额（Usage-based / 超额用量）」，这样当订阅额度用尽后，AI 请求仍能继续使用，避免持续协作中途中断。</p>
+        <figure class="doc-fig">
+          <img src="img/02.png" alt="Cursor 账号开启超额设置">
+          <figcaption>在账号设置中开启超额用量。</figcaption>
+        </figure>
+      </section>
+
+      <section class="doc-section" id="ide-settings">
+        <h3 class="doc-title">IDE 设置</h3>
+        <p class="lead">将网络模式改为 HTTP/1.1，提升连接稳定性。</p>
+        <p>打开 Cursor 设置，找到 <strong>Network</strong> 相关选项，将其改为 <code>HTTP/1</code>（HTTP1.1）模式，以保证插件与服务端的通信更稳定。</p>
+        <figure class="doc-fig">
+          <img src="img/03.png" alt="Cursor 网络模式改为 HTTP1.1">
+          <figcaption>将 Network 模式设置为 HTTP/1.1。</figcaption>
+        </figure>
+      </section>
+
+      <section class="doc-section" id="install">
+        <h3 class="doc-title">安装插件</h3>
+        <p class="lead">通过 VSIX 文件将插件安装到 Cursor。</p>
+        <ol>
+          <li>打开 <strong>Cursor</strong>。</li>
+          <li>按 <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>，输入 <code>Extensions: Install from VSIX...</code>。</li>
+          <li>选择 <code>cursor-continue-x.x.x.vsix</code> 文件。</li>
+          <li>等待安装完成，Cursor 会自动重载；若没有自动重启，请<strong>手动重启 Cursor</strong>。</li>
+        </ol>
+        <div class="callout">
+          安装完成后，Cursor 的提问框中会出现橙色的 <strong>CC 图标</strong>，代表插件已准备就绪。
         </div>
-      </div>
-      <div class="step reveal d2">
-        <div class="n">3</div>
-        <div>
-          <h4>开始协作</h4>
-          <p>点击「同步配置」→ 聊天框输入第一条消息 → 点击右下角 <strong>CC 按钮</strong>（橙色）发送。之后在底部面板输入框中输入指令，按 <kbd>Enter</kbd> 发送，循环往复，持续对话。</p>
+        <figure class="doc-fig">
+          <img src="img/04.png" alt="提问框出现橙色 CC 图标">
+          <figcaption>提问框右下角出现橙色 CC 图标，即表示安装成功、准备完成。</figcaption>
+        </figure>
+      </section>
+
+      <section class="doc-section" id="activate">
+        <h3 class="doc-title">激活卡密</h3>
+        <p class="lead">使用卡密激活插件，开启协作功能。</p>
+        <ol>
+          <li>安装后底部会出现 <code>Cursor Continue</code> 面板。</li>
+          <li>输入你的卡密（格式：<code>CCG-XXXX-XXXX-XXXX-XXXX</code>）。</li>
+          <li>点击「<strong>激活</strong>」。</li>
+          <li>看到「<strong>已激活</strong>」即完成。</li>
+        </ol>
+        <figure class="doc-fig">
+          <img src="img/01.png" alt="Cursor Continue 插件面板展示">
+          <figcaption>Cursor Continue 面板位于 Cursor 底部，提供「同步配置」「检测状态」等操作。</figcaption>
+        </figure>
+        <div class="callout">
+          还没有卡密？前往购买地址：<a href="https://a8.al" target="_blank" rel="noopener"><strong>A8.AL</strong></a>
         </div>
-      </div>
+      </section>
+
+      <section class="doc-section" id="sync">
+        <h3 class="doc-title">同步配置</h3>
+        <p class="lead">部署工作区配置，并检测插件运行状态。</p>
+        <ol>
+          <li>点击面板中的「<strong>同步配置</strong>」，使用默认配置即可，等待部署完成。</li>
+          <li>点击「<strong>检测状态</strong>」，即可查看当前运行状态。</li>
+          <li>状态正常如下图所示，即表示配置成功、可以开始使用。</li>
+        </ol>
+        <figure class="doc-fig">
+          <img src="img/05.png" alt="检测状态显示正常">
+          <figcaption>点击「检测状态」后显示的正常状态。</figcaption>
+        </figure>
+      </section>
+
+      <section class="doc-section" id="first-message">
+        <h3 class="doc-title">发送第一条消息</h3>
+        <p class="lead">用橙色 CC 图标发送第一条消息，建立与 Cursor 的会话连接。</p>
+        <ol>
+          <li>在 Cursor IDE 的提问框中输入第一条消息，例如「<strong>你好</strong>」。</li>
+          <li>点击提问框右下角的橙色 <strong>CC 图标</strong>，发送消息并连接会话。</li>
+          <li>插件会自动尝试连接会话，期间可能<strong>反复重试连接</strong>，属于正常现象，请耐心等待连接完成。</li>
+          <li>连接成功后如下图所示，即可开始持续对话。</li>
+        </ol>
+        <div class="callout">
+          第一条消息<strong>必须</strong>用橙色 CC 图标发送，它负责建立会话连接；之后的消息只需在底部面板输入框中输入即可。
+        </div>
+
+        <h4>关于模型选择</h4>
+        <ul>
+          <li>连接会话前请<span class="text-warn">先选择好模型</span>。</li>
+          <li>连接成功后再切换模型<span class="text-warn">无实际用途</span>，会话仍使用初始连接时的模型。</li>
+          <li>若最高级模型一直无法连接成功，可以尝试<span class="text-warn">切换到其他模型</span>再试。</li>
+        </ul>
+
+        <figure class="doc-fig">
+          <img src="img/06.png" alt="会话连接成功">
+          <figcaption>会话连接成功的状态。</figcaption>
+        </figure>
+      </section>
+
+      <section class="doc-section" id="continue">
+        <h3 class="doc-title">持续对话</h3>
+        <p class="lead">连接成功后，在插件面板中持续对话，无需手动操作。</p>
+        <p>连接成功后，就可以在插件底部面板的<strong>对话框</strong>中输入会话内容，按 <kbd>Enter</kbd> 发送。Cursor 完成当前任务后会自动等待你的下一条指令，如此循环往复，持续对话无需反复手动发送消息。</p>
+        <figure class="doc-fig">
+          <img src="img/07.png" alt="在插件面板对话框中输入会话">
+          <figcaption>在插件底部面板的对话框中输入会话内容，按 Enter 发送。</figcaption>
+        </figure>
+      </section>
+
+      <section class="doc-section" id="attachments">
+        <h3 class="doc-title">附件与图片</h3>
+        <p class="lead">在对话中附加文件或图片，补充更多上下文。</p>
+
+        <h4>附件</h4>
+        <p>复制文件的<strong>相对路径</strong>（例如 <code>页面01\页面03</code>），粘贴到对话框即可附加该文件。</p>
+        <figure class="doc-fig">
+          <img src="img/08.png" alt="粘贴文件相对路径以附加附件">
+          <figcaption>复制文件的相对路径并粘贴到对话框，即可附加附件。</figcaption>
+        </figure>
+
+        <h4>图片</h4>
+        <p>直接在对话框中<strong>粘贴图片</strong>即可，开箱即用的多模态协作。</p>
+        <figure class="doc-fig">
+          <img src="img/09.png" alt="直接在对话框中粘贴图片">
+          <figcaption>在对话框中直接粘贴图片。</figcaption>
+        </figure>
+      </section>
+
+      <section class="doc-section" id="end">
+        <h3 class="doc-title">结束对话</h3>
+        <p class="lead">随时结束当前会话。</p>
+        <p>在 Cursor IDE 中点击「<strong>停止会话</strong>」即可结束当前对话。</p>
+      </section>
+
+      <section class="doc-section" id="tips">
+        <h3 class="doc-title">使用技巧</h3>
+        <p class="lead">一些提升使用体验的小技巧。</p>
+        <ul>
+          <li>连接会话时可能需要<strong>多次重试</strong>，属于正常现象，请耐心等待。</li>
+          <li>连接成功率与<strong>网络环境</strong>及<strong>代理质量</strong>密切相关，建议使用稳定的网络与代理以提升成功率。</li>
+        </ul>
+      </section>
+
+      <section class="doc-section" id="troubleshoot">
+        <h3 class="doc-title">常见问题</h3>
+        <p class="lead">使用中遇到问题？这里也许有答案。</p>
+        <div class="faq-search" id="faqSearch">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="11" cy="11" r="7"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input type="search" id="faqInput" placeholder="搜索关键字，例如：中断、unpaid、连接…" autocomplete="off">
+          <button class="fs-clear" id="faqClear" type="button" aria-label="清空">&times;</button>
+        </div>
+        <div class="doc-faq" id="docFaq">
+          <details open>
+            <summary>会话中断</summary>
+            <div class="a">按照「<a href="#first-message">发送第一条消息</a>」的步骤重新连接即可。</div>
+          </details>
+          <details>
+            <summary>提示 You have an unpaid invoice</summary>
+            <div class="a">
+              <p>出现下图所示提示时，按照「<a href="#first-message">发送第一条消息</a>」的步骤重新连接即可。</p>
+              <figure class="doc-fig">
+                <img src="img/10.png" alt="You have an unpaid invoice 提示">
+                <figcaption>You have an unpaid invoice 报错示例。</figcaption>
+              </figure>
+            </div>
+          </details>
+          <details>
+            <summary>面板一直显示"正在检查授权状态"？</summary>
+            <div class="a">确认已输入卡密并点击激活。如果持续卡住，尝试 <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd> → <code>Developer: Reload Window</code>。</div>
+          </details>
+          <details>
+            <summary>提示"授权已过期"？</summary>
+            <div class="a">卡密已过期，需要获取新的卡密重新激活。</div>
+          </details>
+          <details>
+            <summary>Cursor 没有调用桥接脚本？</summary>
+            <div class="a">先点击「同步配置」确保工作区文件已部署，然后重新开始一个新的 Chat/Agent 会话。</div>
+          </details>
+          <details>
+            <summary>换了电脑还能用吗？</summary>
+            <div class="a">每个卡密绑定一台设备，换电脑需使用新卡密。</div>
+          </details>
+        </div>
+        <div class="faq-empty" id="faqEmpty">没有找到相关问题，换个关键字试试。</div>
+
+        <div class="group-card">
+          <div class="gc-text">
+            <h4>问题没有解决？加入售后交流群</h4>
+            <p>遇到上面没覆盖到的问题，欢迎加入 <strong>AI Cursor-WindSurf-交流群</strong>，群内可获得使用指导与售后支持。</p>
+          </div>
+          <a class="gc-btn" href="https://qm.qq.com/q/snqJcFORXy" target="_blank" rel="noopener">加入群聊</a>
+        </div>
+      </section>
+
+      </main>
     </div>
   </section>
+
+  <!-- docs sidebar scrim (mobile only) -->
+  <div class="docs-scrim" id="docsScrim"></div>
 
   <!-- PRICING -->
   <section class="section dark" id="pricing">
@@ -535,37 +1078,13 @@
     <p class="desc reveal" style="margin-top:36px;font-size:15px;">每个卡密只能在一台设备上使用 · 到期需用新卡密重新激活 · 使用中需保持网络连接，插件会定期验证授权 · 重装系统后同一台设备可用原卡密重新激活。</p>
   </section>
 
-  <!-- FAQ -->
-  <section class="section" id="faq">
-    <div class="eyebrow reveal">支持</div>
-    <h2 class="reveal d1">常见问题。</h2>
-    <div class="faq reveal d2">
-      <details open>
-        <summary>面板一直显示"正在检查授权状态"？</summary>
-        <div class="ans">确认已输入卡密并点击激活。如果持续卡住，尝试 <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd> → <code>Developer: Reload Window</code>。</div>
-      </details>
-      <details>
-        <summary>提示"授权已过期"？</summary>
-        <div class="ans">卡密已过期，需要获取新的卡密重新激活。</div>
-      </details>
-      <details>
-        <summary>Cursor 没有调用桥接脚本？</summary>
-        <div class="ans">先点击「同步配置」确保工作区文件已部署，然后重新开始一个新的 Chat/Agent 会话。</div>
-      </details>
-      <details>
-        <summary>换了电脑还能用吗？</summary>
-        <div class="ans">每个卡密绑定一台设备，换电脑需使用新卡密。</div>
-      </details>
-    </div>
-  </section>
-
   <!-- CTA BAND -->
   <section class="section" style="padding-top:0;">
     <div class="cta-band reveal">
       <div class="cta-inner">
         <h2>准备好让 AI 持续工作了吗？</h2>
         <p>立即激活 Cursor Continue，开启不间断的高效协作体验。</p>
-        <a class="btn-pill" href="getting-started.html">现在开始 →</a>
+        <a class="btn-pill" href="#docs">现在开始 →</a>
       </div>
     </div>
   </section>
@@ -578,19 +1097,45 @@
       <div class="foot-links">
         <a href="#hero">概览</a>
         <a href="#features">功能</a>
-        <a href="getting-started.html">使用</a>
+        <a href="#docs">使用</a>
         <a href="#pricing">卡密</a>
-        <a href="#faq">支持</a>
+        <a href="#troubleshoot">支持</a>
+        <a href="https://qm.qq.com/q/snqJcFORXy" target="_blank" rel="noopener">售后交流群</a>
       </div>
       <hr>
       <p>Copyright © 2026 Cursor Continue. 让 Cursor AI 持续工作的协作扩展。</p>
     </div>
   </footer>
 
+  <!-- LIGHTBOX -->
+  <div class="lightbox" id="lightbox">
+    <button class="lb-close" id="lbClose" aria-label="关闭">&times;</button>
+    <img id="lbImg" src="" alt="">
+  </div>
+
 <script>
   // top notice close
   const topNotice = document.getElementById('topNotice');
   document.getElementById('tnClose')?.addEventListener('click', () => topNotice.classList.add('hide'));
+
+  // mobile hamburger nav
+  const navBurger = document.getElementById('navBurger');
+  const navMenu = document.getElementById('navMenu');
+  const navScrim = document.getElementById('navScrim');
+  function closeNav() {
+    navBurger.classList.remove('open');
+    navMenu.classList.remove('open');
+    navScrim.classList.remove('show');
+    navBurger.setAttribute('aria-expanded', 'false');
+  }
+  navBurger?.addEventListener('click', () => {
+    const open = navMenu.classList.toggle('open');
+    navBurger.classList.toggle('open', open);
+    navScrim.classList.toggle('show', open);
+    navBurger.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+  navScrim?.addEventListener('click', closeNav);
+  navMenu?.querySelectorAll('a').forEach(a => a.addEventListener('click', closeNav));
 
   // scroll progress + nav state
   const progress = document.getElementById('progress');
@@ -616,6 +1161,145 @@
     entries.forEach(e => { if (e.isIntersecting) { mock.classList.add('play'); mockObs.unobserve(mock); } });
   }, { threshold: 0.4 });
   mockObs.observe(mock);
+
+  // docs sidebar mobile drawer
+  const docsSidebar = document.getElementById('docsSidebar');
+  const docsScrim = document.getElementById('docsScrim');
+  const docsMenuToggle = document.getElementById('docsMenuToggle');
+  function closeDocsMenu(){ docsSidebar.classList.remove('open'); docsScrim.classList.remove('show'); }
+  docsMenuToggle?.addEventListener('click', () => {
+    docsSidebar.classList.toggle('open');
+    docsScrim.classList.toggle('show');
+  });
+  docsScrim?.addEventListener('click', closeDocsMenu);
+
+  // docs sidebar scroll-spy (highlights current subsection)
+  const sideLinks = [...document.querySelectorAll('#docsSidebar [data-sec]')];
+  const sideById = new Map(sideLinks.map(a => [a.getAttribute('href').slice(1), a]));
+  sideLinks.forEach(a => a.addEventListener('click', closeDocsMenu));
+  const docSections = [...document.querySelectorAll('.doc-section')];
+  const docsContent = document.querySelector('.docs-content');
+  const triggerLine = 100;
+  let activeId = null;
+
+  function setActiveDoc(id) {
+    if (id === activeId) return;
+    activeId = id;
+    sideLinks.forEach(l => l.classList.remove('active'));
+    const a = sideById.get(id);
+    if (a) {
+      a.classList.add('active');
+      a.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    }
+  }
+
+  // give content enough trailing room so short last sections can reach trigger line
+  function adjustBottomPad() {
+    if (!docsContent || !docSections.length) return;
+    const last = docSections[docSections.length - 1];
+    const lastH = last.getBoundingClientRect().height;
+    const needed = Math.max(80, Math.ceil(window.innerHeight - triggerLine - lastH + 40));
+    docsContent.style.paddingBottom = needed + 'px';
+  }
+
+  function updateActiveDoc() {
+    let current = null;
+    for (const sec of docSections) {
+      if (sec.getBoundingClientRect().top <= triggerLine) current = sec.id;
+    }
+    if (current) setActiveDoc(current);
+  }
+
+  function refreshDocs() { adjustBottomPad(); updateActiveDoc(); }
+  window.addEventListener('scroll', updateActiveDoc, { passive: true });
+  window.addEventListener('resize', refreshDocs);
+  window.addEventListener('load', refreshDocs);
+  refreshDocs();
+
+  // lightbox: click any doc image to zoom
+  const lightbox = document.getElementById('lightbox');
+  const lbImg = document.getElementById('lbImg');
+  const lbClose = document.getElementById('lbClose');
+  function openLightbox(src, alt) {
+    lbImg.src = src; lbImg.alt = alt || '';
+    lightbox.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeLightbox() {
+    lightbox.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  document.querySelectorAll('.doc-fig img').forEach(img => {
+    img.addEventListener('click', () => openLightbox(img.currentSrc || img.src, img.alt));
+  });
+  lightbox.addEventListener('click', closeLightbox);
+  lbClose.addEventListener('click', closeLightbox);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+
+  // FAQ search / filter with keyword highlight
+  const faqWrap = document.getElementById('faqSearch');
+  const faqInput = document.getElementById('faqInput');
+  const faqClear = document.getElementById('faqClear');
+  const faqEmpty = document.getElementById('faqEmpty');
+  const faqItems = [...document.querySelectorAll('#docFaq details')].map(d => {
+    const sum = d.querySelector('summary');
+    const ans = d.querySelector('.a');
+    return {
+      el: d, sum, ans,
+      sumOriginal: sum.innerHTML,
+      ansOriginal: ans.innerHTML,
+      text: (sum.textContent + ' ' + ans.textContent).toLowerCase()
+    };
+  });
+  function escapeReg(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+  function highlightIn(container, regex) {
+    const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT, null);
+    const targets = [];
+    let n; while ((n = walker.nextNode())) {
+      if (n.parentElement.closest('mark')) continue;
+      if (regex.test(n.nodeValue)) targets.push(n);
+      regex.lastIndex = 0;
+    }
+    targets.forEach(node => {
+      const frag = document.createDocumentFragment();
+      const parts = node.nodeValue.split(regex);
+      const matches = node.nodeValue.match(regex) || [];
+      parts.forEach((part, i) => {
+        frag.appendChild(document.createTextNode(part));
+        if (i < parts.length - 1) {
+          const m = document.createElement('mark');
+          m.textContent = matches[i];
+          frag.appendChild(m);
+        }
+      });
+      node.parentNode.replaceChild(frag, node);
+    });
+  }
+  function applyFaqFilter() {
+    const raw = faqInput.value.trim();
+    const q = raw.toLowerCase();
+    faqWrap.classList.toggle('has-text', raw.length > 0);
+    let visible = 0;
+    const regex = raw ? new RegExp(escapeReg(raw), 'gi') : null;
+    faqItems.forEach(it => {
+      it.sum.innerHTML = it.sumOriginal;
+      it.ans.innerHTML = it.ansOriginal;
+      const match = !q || it.text.includes(q);
+      it.el.classList.toggle('faq-hide', !match);
+      if (match) {
+        visible++;
+        if (regex) {
+          highlightIn(it.sum, regex);
+          highlightIn(it.ans, regex);
+          it.el.open = true;
+        }
+      }
+    });
+    faqEmpty.classList.toggle('show', visible === 0);
+  }
+  faqInput.addEventListener('input', applyFaqFilter);
+  faqClear.addEventListener('click', () => { faqInput.value = ''; applyFaqFilter(); faqInput.focus(); });
+  faqInput.addEventListener('keydown', e => { if (e.key === 'Escape') { faqInput.value = ''; applyFaqFilter(); } });
 </script>
 </body>
 </html>
