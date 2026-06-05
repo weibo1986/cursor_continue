@@ -18,3 +18,7 @@ Thumbs.db
 
 # 日志
 *.log
+
+# 插件安装包（体积大，改用 Cloudflare R2 外链托管，不部署到 Pages）
+plug/
+*.vsix
