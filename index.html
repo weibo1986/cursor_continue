@@ -264,6 +264,21 @@
     0%,100% { transform: translateY(0) translateX(0); }
     50% { transform: translateY(-30px) translateX(20px); }
   }
+  .hero-highlight {
+    display: inline-flex; align-items: center; justify-content: center; gap: 11px;
+    flex-wrap: wrap; margin-top: 24px;
+    padding: 15px 32px; border-radius: 999px;
+    font-size: 22px; font-weight: 700; letter-spacing: -0.2px; color: #b3530a;
+    background: linear-gradient(90deg, rgba(255,122,24,0.16), rgba(255,157,77,0.16));
+    border: 1.5px solid rgba(255,122,24,0.4);
+    box-shadow: 0 10px 30px rgba(255,122,24,0.2);
+    animation: hh-glow 2.8s ease-in-out infinite;
+  }
+  .hero-highlight svg { width: 26px; height: 26px; color: var(--brand); flex-shrink: 0; }
+  @keyframes hh-glow {
+    0%,100% { box-shadow: 0 10px 30px rgba(255,122,24,0.2); }
+    50% { box-shadow: 0 12px 40px rgba(255,122,24,0.4); }
+  }
 
   /* ---------- TWO-UP GRID ---------- */
   .grid2 {
@@ -676,7 +691,7 @@
   .reveal.d5 { transition-delay: .40s; }
   @media (prefers-reduced-motion: reduce) {
     .reveal { opacity: 1; transform: none; transition: none; }
-    .blob, .grad-text, .cc-btn { animation: none !important; }
+    .blob, .grad-text, .cc-btn, .hero-highlight { animation: none !important; }
   }
 
   /* ============== MOBILE COMPATIBILITY FINE-TUNES ============== */
@@ -684,6 +699,8 @@
     .hero { padding-top: 56px; }
     .hero .blob { display: none; }
     .hero .actions { gap: 18px; }
+    .hero-highlight { font-size: 16.5px; padding: 12px 22px; gap: 9px; }
+    .hero-highlight svg { width: 21px; height: 21px; }
     .mock { margin: 28px 12px 0; padding: 16px; border-radius: 18px; box-shadow: 0 20px 40px rgba(0,0,0,0.12); }
     .mock-bar { margin-bottom: 14px; }
     .bubble { font-size: 14px; padding: 9px 13px; }
@@ -760,6 +777,12 @@
     <h2 class="reveal d1">持续，<span class="grad-text">不止于此。</span></h2>
     <p class="sub reveal d2">让 Cursor AI 不间断为你工作。</p>
     <p class="desc reveal d3">通过底部面板与 Cursor 保持连续对话，告别反复手动发送消息。一次配置，长效协作。</p>
+    <p class="hero-highlight reveal d4">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .962 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.962 0z"/>
+      </svg>
+      理论无限畅享高级模型 · 告别 Token 焦虑
+    </p>
     <div class="actions reveal d4">
       <!-- <a class="link" href="plug/cursorContinue.vsix" download="cursor-continue.vsix">下载插件</a> -->
       <a class="link" href="#docs">了解使用方法</a>
