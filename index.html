@@ -652,6 +652,9 @@
   }
   .price-tag .cur { font-size: 22px; font-weight: 600; color: var(--brand2); transform: translateY(-2px); }
   .price-tag .per { font-size: 14px; font-weight: 500; color: var(--grey); letter-spacing: 0; margin-left: 2px; }
+  .price-tag .price-old { font-size: 17px; font-weight: 500; color: var(--grey); text-decoration: line-through; letter-spacing: 0; margin-left: 7px; }
+  .price-note { font-size: 13.5px; font-weight: 600; color: var(--brand2); margin: 2px 0 0; }
+  .price-note .first { color: #fff; }
 
   /* ---------- CTA BAND ---------- */
   .cta-band { max-width: 1024px; margin: 0 auto; padding: 0 12px; }
@@ -1200,7 +1203,8 @@
       <div class="tile dark price-card reveal" style="background:#1d1d1f;">
         <h3>日卡</h3>
         <p class="sub">轻量体验</p>
-        <div class="price-tag"><span class="cur">¥</span>15.88<span class="per">/ 天</span></div>
+        <div class="price-tag"><span class="cur">¥</span>8.88<span class="per">/ 天</span><s class="price-old">¥15.88</s></div>
+        <p class="price-note"><span class="first">首单特惠价</span> · 往后 ¥15.88 / 天</p>
         <p class="desc">完整功能 · 单设备绑定 · 持续对话 · 文件与图片支持</p>
         <p class="price">有效期 1 天</p>
         <div class="actions"><a class="link" href="https://a8.al" target="_blank" rel="noopener">获取日卡</a></div>
