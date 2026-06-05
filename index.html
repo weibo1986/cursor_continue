@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cursor Continue</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23ff7a18'/%3E%3Cstop offset='1' stop-color='%23ff9d4d'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='14' fill='url(%23g)'/%3E%3Ctext x='32' y='45' font-family='Arial,sans-serif' font-size='30' font-weight='bold' fill='%23fff' text-anchor='middle'%3ECC%3C/text%3E%3C/svg%3E">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  :root {
+    --blue: #0066cc;
+    --blue-light: #2997ff;
+    --ink: #1d1d1f;
+    --grey: #86868b;
+    --bg: #fff;
+    --bg2: #f5f5f7;
+    --brand: #ff7a18;
+    --brand2: #ff9d4d;
+    --nav-h: 48px;
+    --ease: cubic-bezier(0.25, 0.1, 0.25, 1);
+  }
+  body {
+    font-family: "SF Pro Display", "SF Pro Text", -apple-system, BlinkMacSystemFont,
+      "Helvetica Neue", "PingFang SC", "Microsoft YaHei", Helvetica, Arial, sans-serif;
+    color: var(--ink);
+    background: var(--bg);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.4;
+    overflow-x: hidden;
+  }
+  a { text-decoration: none; color: var(--blue); }
+  .link {
+    font-size: 21px; color: var(--blue);
+    display: inline-flex; align-items: center; gap: 2px;
+    transition: gap .25s var(--ease);
+  }
+  .link:hover { text-decoration: underline; }
+  .link::after { content: "›"; font-size: 22px; line-height: 1; transition: transform .25s var(--ease); }
+  .link:hover::after { transform: translateX(3px); }
+  @media (max-width: 600px){ .link{ font-size: 17px;} }
+
+  /* ---------- CUSTOM SCROLLBAR ---------- */
+  * { scrollbar-width: thin; scrollbar-color: rgba(0,0,0,0.25) transparent; }
+  ::-webkit-scrollbar { width: 11px; height: 11px; }
+  ::-webkit-scrollbar-button { display: none; width: 0; height: 0; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(0,0,0,0.22);
+    border-radius: 999px;
+    border: 3px solid transparent;
+    background-clip: content-box;
+    transition: background .2s ease;
+  }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(255,122,24,0.55); background-clip: content-box; }
+  ::-webkit-scrollbar-thumb:active { background: rgba(255,122,24,0.8); background-clip: content-box; }
+
+  /* ---------- TOP NOTICE BANNER ---------- */
+  .top-notice {
+    background: linear-gradient(90deg, #fff4e6, #fff8ef);
+    border-bottom: 1px solid rgba(255,122,24,0.25);
+    color: #7a3a07;
+    font-size: 13.5px; line-height: 1.5;
+    padding: 9px 22px;
+    text-align: center;
+    position: relative;
+  }
+  .top-notice strong { color: #b3530a; font-weight: 600; }
+  .top-notice .tn-close {
+    position: absolute; top: 50%; right: 14px; transform: translateY(-50%);
+    background: none; border: none; cursor: pointer;
+    width: 26px; height: 26px; border-radius: 6px;
+    color: #b3530a; font-size: 18px; line-height: 1; font-weight: 300;
+    display: grid; place-items: center; transition: background .2s;
+  }
+  .top-notice .tn-close:hover { background: rgba(255,122,24,0.15); }
+  .top-notice.hide { display: none; }
+  @media (max-width: 560px){
+    .top-notice { font-size: 12.5px; padding: 8px 36px 8px 14px; text-align: left; }
+  }
+
+  /* ---------- SCROLL PROGRESS BAR ---------- */
+  .progress {
+    position: fixed; top: 0; left: 0; height: 3px; width: 0;
+    background: linear-gradient(90deg, var(--brand), var(--brand2));
+    z-index: 10000; transition: width .1s linear;
+    box-shadow: 0 0 10px rgba(255,122,24,0.5);
+  }
+
+  /* ---------- NAV (Apple-style) ---------- */
+  .nav {
+    position: sticky; top: 0; z-index: 9999;
+    height: var(--nav-h);
+    background: rgba(251,251,253,0.7);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    border-bottom: 1px solid rgba(0,0,0,0);
+    transition: border-color .3s var(--ease), background .3s var(--ease);
+  }
+  .nav.scrolled {
+    background: rgba(251,251,253,0.85);
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+  }
+  .nav-inner {
+    max-width: 1024px; margin: 0 auto; height: 100%;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 22px;
+  }
+  .nav-logo {
+    font-size: 19px; font-weight: 600; letter-spacing: -0.2px;
+    display: flex; align-items: center; gap: 9px;
+  }
+  .nav-logo .logo {
+    width: 26px; height: 26px; border-radius: 7px;
+    background: linear-gradient(135deg, var(--brand), var(--brand2));
+    display: grid; place-items: center; color: #fff; font-weight: 800; font-size: 12px;
+    box-shadow: 0 3px 10px rgba(255,122,24,0.35);
+  }
+  .nav-menu { display: flex; gap: 32px; }
+  .nav-menu a {
+    font-size: 12px; color: var(--ink); opacity: .82;
+    font-weight: 400; position: relative; transition: opacity .2s;
+  }
+  .nav-menu a::after {
+    content: ""; position: absolute; left: 0; bottom: -6px; height: 2px; width: 0;
+    background: var(--brand); border-radius: 2px; transition: width .25s var(--ease);
+  }
+  .nav-menu a:hover { opacity: 1; }
+  .nav-menu a:hover::after { width: 100%; }
+  @media (max-width: 760px){ .nav-menu { gap: 18px; } }
+  @media (max-width: 560px){ .nav-menu a:nth-child(n+4){ display:none; } }
+
+  /* ---------- SECTION ---------- */
+  .section {
+    text-align: center;
+    padding: 90px 22px;
+    position: relative;
+  }
+  .section.dark { background: #000; color: #f5f5f7; }
+  .section.grey { background: var(--bg2); }
+  .section h2 {
+    font-size: 56px; line-height: 1.05; font-weight: 600;
+    letter-spacing: -0.5px; margin-bottom: 8px;
+  }
+  .section .sub {
+    font-size: 28px; font-weight: 500; line-height: 1.2;
+    margin-bottom: 6px; letter-spacing: -0.2px;
+  }
+  .section .desc {
+    font-size: 21px; color: var(--grey); font-weight: 400;
+    max-width: 640px; margin: 10px auto 0;
+  }
+  .section.dark .desc { color: #a1a1a6; }
+  .section .price { font-size: 17px; color: var(--grey); margin-top: 16px; }
+  .section.dark .price { color: #a1a1a6; }
+  .actions { margin-top: 22px; display: flex; gap: 28px; justify-content: center; flex-wrap: wrap; }
+  @media (max-width: 600px){
+    .section { padding: 64px 22px; }
+    .section h2 { font-size: 34px; }
+    .section .sub { font-size: 21px; }
+    .section .desc { font-size: 17px; }
+  }
+
+  .grad-text {
+    background: linear-gradient(120deg, var(--brand) 0%, var(--brand2) 50%, var(--blue-light) 100%);
+    background-size: 200% auto;
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    animation: shimmer 6s linear infinite;
+  }
+  @keyframes shimmer { to { background-position: 200% center; } }
+
+  .eyebrow {
+    font-size: 21px; font-weight: 600; color: var(--brand);
+    margin-bottom: 10px;
+  }
+  .section.dark .eyebrow { color: var(--brand2); }
+
+  /* ---------- HERO ---------- */
+  .hero {
+    position: relative; overflow: hidden;
+    padding-top: 80px;
+    background:
+      radial-gradient(900px 460px at 50% -120px, rgba(255,122,24,0.14), transparent 70%),
+      radial-gradient(700px 380px at 85% 10%, rgba(41,151,255,0.10), transparent 70%);
+  }
+  .hero .blob {
+    position: absolute; border-radius: 50%; filter: blur(60px); opacity: .5; z-index: 0;
+    animation: float 14s ease-in-out infinite;
+  }
+  .hero .blob.b1 { width: 320px; height: 320px; left: -80px; top: 40px;
+    background: radial-gradient(circle, rgba(255,122,24,0.4), transparent 70%); }
+  .hero .blob.b2 { width: 280px; height: 280px; right: -60px; top: 120px;
+    background: radial-gradient(circle, rgba(41,151,255,0.35), transparent 70%);
+    animation-delay: -7s; }
+  .hero > * { position: relative; z-index: 1; }
+  @keyframes float {
+    0%,100% { transform: translateY(0) translateX(0); }
+    50% { transform: translateY(-30px) translateX(20px); }
+  }
+
+  /* ---------- TWO-UP GRID ---------- */
+  .grid2 {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+    max-width: 1024px; margin: 14px auto 0; padding: 0 12px;
+  }
+  /* extra breathing room around the standalone two-up tiles */
+  body > .grid2 { margin: 40px auto 80px; }
+  @media (max-width: 600px){ body > .grid2 { margin: 28px auto 56px; } }
+  @media (max-width: 734px){ .grid2 { grid-template-columns: 1fr; } }
+  .tile {
+    border-radius: 22px; padding: 52px 24px; text-align: center;
+    background: var(--bg2);
+    transition: transform .4s var(--ease), box-shadow .4s var(--ease);
+    will-change: transform;
+  }
+  .tile:hover { transform: translateY(-6px); box-shadow: 0 24px 50px rgba(0,0,0,0.12); }
+  .tile.dark { background: #000; color: #f5f5f7; }
+  .tile.dark:hover { box-shadow: 0 24px 60px rgba(0,0,0,0.5); }
+  .tile h3 { font-size: 40px; font-weight: 600; letter-spacing: -0.4px; }
+  .tile .sub { font-size: 19px; font-weight: 500; margin-top: 4px; }
+  .tile .desc { font-size: 17px; color: var(--grey); margin-top: 8px; }
+  .tile.dark .desc { color: #a1a1a6; }
+  .tile .actions { margin-top: 16px; }
+  .tile .link { font-size: 17px; }
+
+  /* device mock visual */
+  .mock {
+    margin: 44px auto 0; max-width: 560px;
+    background: linear-gradient(180deg,#fbfbfd,#f0f0f3);
+    border-radius: 22px; padding: 22px; text-align: left;
+    box-shadow: 0 40px 80px rgba(0,0,0,0.16), 0 0 0 1px rgba(0,0,0,0.04);
+  }
+  .mock-bar { display:flex; gap:7px; margin-bottom:18px; }
+  .mock-bar i { width:12px;height:12px;border-radius:50%;display:block; }
+  .mock-bar i:nth-child(1){background:#ff5f57;}
+  .mock-bar i:nth-child(2){background:#febc2e;}
+  .mock-bar i:nth-child(3){background:#28c840;}
+  .chat-row { display:flex; margin-bottom:11px; opacity: 0; }
+  .chat-row.me { justify-content:flex-end; }
+  .mock.play .chat-row { animation: pop .5s var(--ease) forwards; }
+  .mock.play .chat-row:nth-child(2){ animation-delay:.2s; }
+  .mock.play .chat-row:nth-child(3){ animation-delay:.9s; }
+  .mock.play .chat-row:nth-child(4){ animation-delay:1.5s; }
+  .mock.play .chat-row:nth-child(5){ animation-delay:2.2s; }
+  .mock.play .cc-input { animation: pop .5s var(--ease) 2.7s forwards; }
+  @keyframes pop {
+    from { opacity:0; transform: translateY(10px) scale(.96); }
+    to   { opacity:1; transform: none; }
+  }
+  .bubble {
+    font-size:15px; padding:10px 15px; border-radius:18px; max-width:78%;
+    line-height:1.45;
+  }
+  .bubble.ai { background:#e9e9eb; color:#1d1d1f; border-bottom-left-radius:5px; }
+  .bubble.me { background: var(--blue); color:#fff; border-bottom-right-radius:5px; }
+  .cc-input {
+    margin-top:16px; display:flex; align-items:center; gap:10px; opacity: 0;
+    background:#fff; border:1px solid rgba(0,0,0,0.1); border-radius:13px; padding:11px 13px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.05);
+  }
+  .cc-input span { flex:1; color:var(--grey); font-size:14px; }
+  .cc-btn {
+    width:32px;height:32px;border-radius:9px;
+    background:linear-gradient(135deg,var(--brand),var(--brand2));
+    display:grid;place-items:center;color:#fff;font-weight:800;font-size:12px;
+    box-shadow: 0 4px 12px rgba(255,122,24,0.45);
+    animation: pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%,100% { box-shadow: 0 4px 12px rgba(255,122,24,0.45); }
+    50% { box-shadow: 0 4px 22px rgba(255,122,24,0.75); }
+  }
+
+  /* ---------- FEATURE STRIP ---------- */
+  .strip { max-width: 980px; margin: 0 auto; padding: 0 22px; }
+  .feat-grid {
+    display:grid; grid-template-columns: repeat(3,1fr); gap: 18px;
+    margin-top: 50px; text-align: left;
+  }
+  @media (max-width: 734px){ .feat-grid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 480px){ .feat-grid { grid-template-columns: 1fr; } }
+  .feat {
+    background: #fff; border: 1px solid rgba(0,0,0,0.07); border-radius: 18px;
+    padding: 26px 24px;
+    transition: transform .35s var(--ease), box-shadow .35s var(--ease), border-color .35s var(--ease);
+  }
+  .feat:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 18px 40px rgba(0,0,0,0.09);
+    border-color: rgba(255,122,24,0.4);
+  }
+  .feat h4 { font-size: 19px; font-weight: 600; margin: 0 0 8px; }
+  .feat p { font-size: 15px; color: var(--grey); line-height: 1.55; }
+
+  /* ---------- STEPS ---------- */
+  .steps-wrap { max-width: 760px; margin: 50px auto 0; text-align:left; position: relative; }
+  .step {
+    display:flex; gap:22px; padding: 28px 0; border-top: 1px solid rgba(0,0,0,0.1);
+  }
+  .step:last-child { border-bottom: 1px solid rgba(0,0,0,0.1); }
+  .step .n {
+    flex-shrink:0; width:40px; height:40px; border-radius:50%;
+    background: linear-gradient(135deg, var(--brand), var(--brand2)); color:#fff;
+    display:grid; place-items:center; font-size:17px; font-weight:700;
+    box-shadow: 0 6px 16px rgba(255,122,24,0.35);
+  }
+  .step h4 { font-size:21px; font-weight:600; margin-bottom:4px; }
+  .step p { font-size:16px; color:var(--grey); line-height:1.55; }
+  .step code, .step kbd { font-size:14px; }
+
+  /* ---------- PRICING ---------- */
+  .price-card { position: relative; }
+  .price-card.featured {
+    background: linear-gradient(160deg,#26201a,#1d1d1f) !important;
+    box-shadow: 0 0 0 2px rgba(255,122,24,0.55), 0 30px 60px rgba(0,0,0,0.4);
+  }
+  .badge-hot {
+    position: absolute; top: 18px; right: 18px;
+    background: linear-gradient(135deg, var(--brand), var(--brand2)); color:#fff;
+    font-size: 12px; font-weight: 700; padding: 5px 13px; border-radius: 999px;
+    box-shadow: 0 4px 12px rgba(255,122,24,0.5);
+  }
+
+  /* ---------- FAQ ---------- */
+  .faq { max-width: 760px; margin: 44px auto 0; text-align:left; }
+  .faq details {
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+    transition: background .25s var(--ease);
+  }
+  .faq details[open] { background: linear-gradient(180deg, rgba(0,102,204,0.03), transparent); }
+  .faq summary {
+    cursor:pointer; list-style:none; padding: 22px 4px;
+    font-size: 19px; font-weight: 500; color: var(--ink);
+    display:flex; align-items:center; justify-content:space-between;
+    transition: color .2s;
+  }
+  .faq summary:hover { color: var(--blue); }
+  .faq summary::-webkit-details-marker { display:none; }
+  .faq summary::after { content:"+"; font-size:26px; font-weight:300; color:var(--blue); transition:transform .3s var(--ease); }
+  .faq details[open] summary::after { transform: rotate(45deg); }
+  .faq .ans { padding: 0 4px 22px; font-size:16px; color:var(--grey); line-height:1.6; max-width: 640px; }
+
+  /* ---------- CTA BAND ---------- */
+  .cta-band {
+    max-width: 1024px; margin: 0 auto; padding: 0 12px;
+  }
+  .cta-inner {
+    border-radius: 26px; padding: 70px 30px; text-align: center;
+    background:
+      radial-gradient(600px 300px at 50% -40px, rgba(255,122,24,0.25), transparent 70%),
+      linear-gradient(160deg, #1a1208, #000);
+    color: #fff;
+  }
+  .cta-inner h2 { font-size: 44px; font-weight: 600; letter-spacing: -0.5px; margin-bottom: 12px; }
+  .cta-inner p { font-size: 19px; color: #c9ccd1; margin-bottom: 26px; }
+  .btn-pill {
+    display: inline-block; background: linear-gradient(135deg, var(--brand), var(--brand2));
+    color: #fff; font-size: 16px; font-weight: 600; padding: 14px 32px; border-radius: 999px;
+    box-shadow: 0 10px 30px rgba(255,122,24,0.4);
+    transition: transform .25s var(--ease), box-shadow .25s var(--ease);
+  }
+  .btn-pill:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 16px 40px rgba(255,122,24,0.55); }
+  @media (max-width: 600px){ .cta-inner h2 { font-size: 30px; } }
+
+  code {
+    font-family:"SF Mono",Consolas,monospace; background:rgba(0,0,0,0.05);
+    border-radius:5px; padding:2px 6px; font-size:0.92em; color:#bf4800;
+  }
+  .section.dark code { background:rgba(255,255,255,0.1); color:var(--brand2); }
+  kbd {
+    font-family:inherit; background:rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.15);
+    border-radius:5px; padding:1px 6px; font-size:0.88em;
+  }
+
+  /* ---------- FOOTER ---------- */
+  footer {
+    background: var(--bg2); font-size: 12px; color: var(--grey);
+    padding: 36px 22px;
+  }
+  .foot-inner { max-width: 980px; margin: 0 auto; }
+  .foot-inner hr { border:none; border-top:1px solid rgba(0,0,0,0.1); margin: 18px 0; }
+  .foot-links { display:flex; gap:22px; flex-wrap:wrap; }
+  .foot-links a { color: var(--grey); transition: color .2s; }
+  .foot-links a:hover { color: var(--brand); }
+
+  /* ---------- SCROLL REVEAL ---------- */
+  .reveal { opacity: 0; transform: translateY(28px); transition: opacity .8s var(--ease), transform .8s var(--ease); }
+  .reveal.in { opacity: 1; transform: none; }
+  .reveal.d1 { transition-delay: .08s; }
+  .reveal.d2 { transition-delay: .16s; }
+  .reveal.d3 { transition-delay: .24s; }
+  .reveal.d4 { transition-delay: .32s; }
+  .reveal.d5 { transition-delay: .40s; }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal { opacity: 1; transform: none; transition: none; }
+    .blob, .grad-text, .cc-btn { animation: none !important; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="progress" id="progress"></div>
+
+  <!-- TOP NOTICE -->
+  <div class="top-notice" id="topNotice">
+    <strong>温馨提示：</strong>连续会话不会自动保存每次的代码改动，请<strong>及时查看代码并保存进度</strong>。
+    <button class="tn-close" id="tnClose" aria-label="关闭提示">&times;</button>
+  </div>
+
+  <!-- NAV -->
+  <nav class="nav" id="nav">
+    <div class="nav-inner">
+      <div class="nav-logo"><span class="logo">CC</span> Cursor Continue</div>
+      <div class="nav-menu">
+        <a href="#hero">概览</a>
+        <a href="#features">功能</a>
+        <a href="getting-started.html">使用</a>
+        <a href="#pricing">卡密</a>
+        <a href="#faq">支持</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="section hero" id="hero">
+    <span class="blob b1"></span>
+    <span class="blob b2"></span>
+    <div class="eyebrow reveal">Cursor Continue</div>
+    <h2 class="reveal d1">持续，<span class="grad-text">不止于此。</span></h2>
+    <p class="sub reveal d2">让 Cursor AI 不间断为你工作。</p>
+    <p class="desc reveal d3">通过底部面板与 Cursor 保持连续对话，告别反复手动发送消息。一次配置，长效协作。</p>
+    <div class="actions reveal d4">
+      <a class="link" href="getting-started.html">了解使用方法</a>
+      <a class="link" href="https://a8.al" target="_blank" rel="noopener">获取卡密</a>
+    </div>
+
+    <div class="mock reveal d5" id="mock">
+      <div class="mock-bar"><i></i><i></i><i></i></div>
+      <div class="chat-row me"><div class="bubble me">帮我重构这个模块</div></div>
+      <div class="chat-row"><div class="bubble ai">已完成重构，正在等待你的下一条指令…</div></div>
+      <div class="chat-row me"><div class="bubble me">再补充单元测试</div></div>
+      <div class="chat-row"><div class="bubble ai">测试已生成 ✓ 继续保持对话，无需手动操作。</div></div>
+      <div class="cc-input">
+        <span>输入下一条指令，按 Enter 发送…</span>
+        <div class="cc-btn">CC</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TWO-UP TILES -->
+  <div class="grid2">
+    <div class="tile reveal">
+      <h3>持续对话</h3>
+      <p class="sub">循环不中断。</p>
+      <p class="desc">完成一个任务后自动等待你的下一条指令。</p>
+      <div class="actions"><a class="link" href="#features">了解更多</a></div>
+    </div>
+    <div class="tile dark reveal d1">
+      <h3>CC 一键发送</h3>
+      <p class="sub">橙色按钮，一触即达。</p>
+      <p class="desc">第一条消息用 CC 按钮发送，之后皆在面板中输入。</p>
+      <div class="actions"><a class="link" href="getting-started.html">了解更多</a></div>
+    </div>
+  </div>
+
+  <!-- FEATURES -->
+  <section class="section grey" id="features">
+    <div class="eyebrow reveal">功能特性</div>
+    <h2 class="reveal d1">为高效而生。</h2>
+    <p class="desc reveal d2">专注每一处细节，把你从重复操作中解放出来。</p>
+    <div class="strip">
+      <div class="feat-grid">
+        <div class="feat reveal"><h4>持续对话</h4><p>底部面板长效桥接，Cursor 完成后等待下一条指令，循环不中断。</p></div>
+        <div class="feat reveal d1"><h4>附加文件</h4><p>拖拽文件到面板，或通过附件功能添加，上下文随手补充。</p></div>
+        <div class="feat reveal d2"><h4>粘贴图片</h4><p>直接在输入框中粘贴图片，多模态协作开箱即用。</p></div>
+        <div class="feat reveal"><h4>一键同步配置</h4><p>点击「同步配置」即可部署工作区文件，无需手动设置。</p></div>
+        <div class="feat reveal d1"><h4>卡密授权</h4><p>设备绑定的卡密机制，安全可控，重装系统亦可复用。</p></div>
+        <div class="feat reveal d2"><h4>即时响应</h4><p>输入即发送，Enter 一键提交指令，工作流如丝般顺滑。</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- START -->
+  <section class="section" id="start">
+    <div class="eyebrow reveal">快速开始</div>
+    <h2 class="reveal d1">三步，即刻上手。</h2>
+    <p class="desc reveal d2">从安装到持续协作，只需几分钟。</p>
+    <div class="steps-wrap">
+      <div class="step reveal">
+        <div class="n">1</div>
+        <div>
+          <h4>安装插件</h4>
+          <p>打开 Cursor，<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd> 输入 <code>Extensions: Install from VSIX...</code>，选择 <code>cursor-continue-x.x.x.vsix</code>，等待自动重载。</p>
+        </div>
+      </div>
+      <div class="step reveal d1">
+        <div class="n">2</div>
+        <div>
+          <h4>激活卡密</h4>
+          <p>底部出现 <code>Cursor Continue</code> 面板，输入卡密（<code>CCG-XXXX-XXXX-XXXX-XXXX</code>），点击「激活」，看到「已激活」即完成。</p>
+        </div>
+      </div>
+      <div class="step reveal d2">
+        <div class="n">3</div>
+        <div>
+          <h4>开始协作</h4>
+          <p>点击「同步配置」→ 聊天框输入第一条消息 → 点击右下角 <strong>CC 按钮</strong>（橙色）发送。之后在底部面板输入框中输入指令，按 <kbd>Enter</kbd> 发送，循环往复，持续对话。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section class="section dark" id="pricing">
+    <div class="eyebrow reveal">卡密方案</div>
+    <h2 class="reveal d1">选择你的节奏。</h2>
+    <p class="desc reveal d2">灵活计费，一卡一设备绑定，按需选择。</p>
+    <div class="grid2" style="margin-top:44px;">
+      <div class="tile dark price-card reveal" style="background:#1d1d1f;">
+        <h3>日卡</h3>
+        <p class="sub">轻量体验</p>
+        <p class="desc">完整功能 · 单设备绑定 · 持续对话 · 文件与图片支持</p>
+        <p class="price">有效期 1 天</p>
+        <div class="actions"><a class="link" href="https://a8.al" target="_blank" rel="noopener">获取日卡</a></div>
+      </div>
+      <div class="tile dark price-card featured reveal d1" style="background:#1d1d1f;">
+        <span class="badge-hot">推荐</span>
+        <h3>周卡</h3>
+        <p class="sub">高效之选</p>
+        <p class="desc">含日卡全部功能 · 更长有效期 · 性价比更高 · 重装可复用</p>
+        <p class="price">有效期 7 天</p>
+        <div class="actions"><a class="link" href="https://a8.al" target="_blank" rel="noopener">获取周卡</a></div>
+      </div>
+    </div>
+    <p class="desc reveal" style="margin-top:36px;font-size:15px;">每个卡密只能在一台设备上使用 · 到期需用新卡密重新激活 · 使用中需保持网络连接，插件会定期验证授权 · 重装系统后同一台设备可用原卡密重新激活。</p>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section" id="faq">
+    <div class="eyebrow reveal">支持</div>
+    <h2 class="reveal d1">常见问题。</h2>
+    <div class="faq reveal d2">
+      <details open>
+        <summary>面板一直显示"正在检查授权状态"？</summary>
+        <div class="ans">确认已输入卡密并点击激活。如果持续卡住，尝试 <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd> → <code>Developer: Reload Window</code>。</div>
+      </details>
+      <details>
+        <summary>提示"授权已过期"？</summary>
+        <div class="ans">卡密已过期，需要获取新的卡密重新激活。</div>
+      </details>
+      <details>
+        <summary>Cursor 没有调用桥接脚本？</summary>
+        <div class="ans">先点击「同步配置」确保工作区文件已部署，然后重新开始一个新的 Chat/Agent 会话。</div>
+      </details>
+      <details>
+        <summary>换了电脑还能用吗？</summary>
+        <div class="ans">每个卡密绑定一台设备，换电脑需使用新卡密。</div>
+      </details>
+    </div>
+  </section>
+
+  <!-- CTA BAND -->
+  <section class="section" style="padding-top:0;">
+    <div class="cta-band reveal">
+      <div class="cta-inner">
+        <h2>准备好让 AI 持续工作了吗？</h2>
+        <p>立即激活 Cursor Continue，开启不间断的高效协作体验。</p>
+        <a class="btn-pill" href="getting-started.html">现在开始 →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="foot-inner">
+      <p>Cursor Continue 是一款第三方 Cursor 协作扩展，与 Apple Inc. 无关。本页面设计仅作风格示例。</p>
+      <hr>
+      <div class="foot-links">
+        <a href="#hero">概览</a>
+        <a href="#features">功能</a>
+        <a href="getting-started.html">使用</a>
+        <a href="#pricing">卡密</a>
+        <a href="#faq">支持</a>
+      </div>
+      <hr>
+      <p>Copyright © 2026 Cursor Continue. 让 Cursor AI 持续工作的协作扩展。</p>
+    </div>
+  </footer>
+
+<script>
+  // top notice close
+  const topNotice = document.getElementById('topNotice');
+  document.getElementById('tnClose')?.addEventListener('click', () => topNotice.classList.add('hide'));
+
+  // scroll progress + nav state
+  const progress = document.getElementById('progress');
+  const nav = document.getElementById('nav');
+  function onScroll() {
+    const h = document.documentElement;
+    const scrolled = h.scrollTop / (h.scrollHeight - h.clientHeight);
+    progress.style.width = (scrolled * 100) + '%';
+    nav.classList.toggle('scrolled', h.scrollTop > 8);
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  // scroll reveal
+  const revealObs = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); revealObs.unobserve(e.target); } });
+  }, { rootMargin: '0px 0px -10% 0px', threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
+
+  // play chat animation once mock is in view
+  const mock = document.getElementById('mock');
+  const mockObs = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { mock.classList.add('play'); mockObs.unobserve(mock); } });
+  }, { threshold: 0.4 });
+  mockObs.observe(mock);
+</script>
+</body>
+</html>

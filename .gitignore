@@ -1,0 +1,20 @@
+# Cursor Continue 桥接工具（本地工具，不部署）
+chatcontinue/
+
+# Cursor IDE 本地配置
+.cursor/
+
+# 测试目录
+页面01/
+
+# 旧版 README
+README (1).md
+
+# 系统/编辑器临时文件
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# 日志
+*.log

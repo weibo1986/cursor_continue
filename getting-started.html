@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>开始使用 — Cursor Continue</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23ff7a18'/%3E%3Cstop offset='1' stop-color='%23ff9d4d'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='14' fill='url(%23g)'/%3E%3Ctext x='32' y='45' font-family='Arial,sans-serif' font-size='30' font-weight='bold' fill='%23fff' text-anchor='middle'%3ECC%3C/text%3E%3C/svg%3E">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  :root {
+    --blue: #0066cc;
+    --ink: #1d1d1f;
+    --grey: #86868b;
+    --bg: #fff;
+    --bg2: #f5f5f7;
+    --line: rgba(0,0,0,0.1);
+    --nav-h: 44px;
+    --subnav-h: 52px;
+    --side-w: 260px;
+  }
+  body {
+    font-family: "SF Pro Display","SF Pro Text",-apple-system,BlinkMacSystemFont,
+      "Helvetica Neue","PingFang SC","Microsoft YaHei",Helvetica,Arial,sans-serif;
+    color: var(--ink); background: var(--bg);
+    -webkit-font-smoothing: antialiased; line-height: 1.5;
+  }
+  a { text-decoration: none; color: var(--blue); }
+
+  /* ---- custom scrollbars ---- */
+  * { scrollbar-width: thin; scrollbar-color: rgba(0,0,0,0.25) transparent; }
+  ::-webkit-scrollbar { width: 11px; height: 11px; }
+  ::-webkit-scrollbar-button { display: none; width: 0; height: 0; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(0,0,0,0.22);
+    border-radius: 999px;
+    border: 3px solid transparent;
+    background-clip: content-box;
+    transition: background .2s ease;
+  }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(255,122,24,0.55); background-clip: content-box; }
+  ::-webkit-scrollbar-thumb:active { background: rgba(255,122,24,0.8); background-clip: content-box; }
+
+  /* ---- top notice banner ---- */
+  .top-notice {
+    background: linear-gradient(90deg, #fff4e6, #fff8ef);
+    border-bottom: 1px solid rgba(255,122,24,0.25);
+    color: #7a3a07;
+    font-size: 13.5px; line-height: 1.5;
+    padding: 9px 22px;
+    text-align: center;
+    position: relative;
+  }
+  .top-notice strong { color: #b3530a; font-weight: 600; }
+  .top-notice .tn-close {
+    position: absolute; top: 50%; right: 14px; transform: translateY(-50%);
+    background: none; border: none; cursor: pointer;
+    width: 26px; height: 26px; border-radius: 6px;
+    color: #b3530a; font-size: 18px; line-height: 1; font-weight: 300;
+    display: grid; place-items: center; transition: background .2s;
+  }
+  .top-notice .tn-close:hover { background: rgba(255,122,24,0.15); }
+  .top-notice.hide { display: none; }
+  @media (max-width: 560px){
+    .top-notice { font-size: 12.5px; padding: 8px 36px 8px 14px; text-align: left; }
+  }
+
+  /* ---- top nav ---- */
+  .nav {
+    position: sticky; top: 0; z-index: 9999; height: var(--nav-h);
+    background: rgba(251,251,253,0.8);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav-inner {
+    max-width: 1200px; margin: 0 auto; height: 100%; padding: 0 22px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .nav-logo { font-size: 19px; font-weight: 600; display: flex; align-items: center; gap: 9px; }
+  .nav-logo .logo {
+    width: 26px; height: 26px; border-radius: 7px;
+    background: linear-gradient(135deg, #ff7a18, #ff9d4d);
+    display: grid; place-items: center; color: #fff; font-weight: 800; font-size: 12px;
+    box-shadow: 0 3px 10px rgba(255,122,24,0.35);
+  }
+  .nav-menu { display: flex; gap: 30px; }
+  .nav-menu a { font-size: 12px; color: var(--ink); opacity: .82; }
+  .nav-menu a:hover { opacity: 1; }
+
+  /* ---- secondary horizontal jump bar (条状) ---- */
+  .subnav {
+    position: sticky; top: var(--nav-h); z-index: 9990;
+    height: var(--subnav-h);
+    background: rgba(255,255,255,0.72);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    border-bottom: 1px solid var(--line);
+  }
+  .subnav-inner {
+    max-width: 1200px; margin: 0 auto; height: 100%; padding: 0 22px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .subnav-title { font-size: 19px; font-weight: 600; margin-right: 18px; white-space: nowrap; }
+  .subnav-links {
+    display: flex; align-items: center; gap: 4px;
+    overflow-x: auto; flex: 1;
+    scrollbar-width: none;
+  }
+  .subnav-links::-webkit-scrollbar { display: none; }
+  .subnav-links a {
+    font-size: 13px; color: var(--ink); opacity: .85; white-space: nowrap;
+    padding: 7px 13px; border-radius: 999px; transition: background .15s, color .15s, opacity .15s;
+  }
+  .subnav-links a:hover { background: var(--bg2); opacity: 1; }
+  .subnav-links a.active { background: rgba(0,102,204,0.1); color: var(--blue); opacity: 1; font-weight: 600; }
+  .subnav-cta {
+    margin-left: auto; flex-shrink: 0;
+    font-size: 13px; font-weight: 500; color: #fff;
+    background: var(--blue); padding: 7px 16px; border-radius: 999px;
+  }
+  .subnav-cta:hover { background: #0055b3; }
+
+  /* ---- layout ---- */
+  .layout {
+    max-width: 1200px; margin: 0 auto;
+    display: grid; grid-template-columns: var(--side-w) 1fr;
+  }
+
+  /* ---- sidebar menu ---- */
+  .sidebar {
+    position: sticky; top: calc(var(--nav-h) + var(--subnav-h)); align-self: start;
+    height: calc(100vh - var(--nav-h) - var(--subnav-h));
+    overflow-y: auto;
+    padding: 36px 22px 60px;
+    border-right: 1px solid var(--line);
+  }
+  .sidebar h1 { font-size: 26px; font-weight: 700; letter-spacing: -0.4px; margin-bottom: 6px; }
+  .sidebar .tagline { font-size: 13px; color: var(--grey); margin-bottom: 28px; }
+
+  .menu-group { margin-bottom: 26px; }
+  .menu-group > .g-title {
+    font-size: 12px; font-weight: 600; color: var(--grey);
+    text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 10px;
+    padding-left: 12px;
+  }
+  .menu-group ul { list-style: none; }
+  .menu-group li a {
+    display: block; font-size: 15px; color: var(--ink);
+    padding: 8px 12px; border-radius: 8px; transition: background .15s, color .15s;
+  }
+  .menu-group li a:hover { background: var(--bg2); }
+  .menu-group li a.active {
+    background: rgba(0,102,204,0.1); color: var(--blue); font-weight: 600;
+  }
+
+  /* ---- content ---- */
+  .content { padding: 48px 60px 120px; min-width: 0; }
+  .doc-section { scroll-margin-top: 116px; } /* anchor offset under both bars */
+  .doc-section + .doc-section { margin-top: 40px; }
+  .doc-section h2 {
+    font-size: 34px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 6px;
+  }
+  .doc-section .lead { font-size: 17px; color: var(--grey); margin-bottom: 22px; }
+  .doc-section h3 { font-size: 20px; font-weight: 600; margin: 28px 0 10px; }
+  .doc-section p { font-size: 16px; margin: 10px 0; }
+  .doc-section ol, .doc-section ul { margin: 12px 0 12px 4px; padding-left: 22px; }
+  .doc-section li { font-size: 16px; margin: 7px 0; }
+  .doc-section .text-warn { color: #d93b3b; font-weight: 600; }
+
+  .placeholder {
+    border: 1.5px dashed var(--line); border-radius: 14px;
+    padding: 26px; color: var(--grey); font-size: 15px;
+    background: var(--bg2); text-align: center;
+  }
+  .placeholder b { color: var(--ink); }
+
+  .callout {
+    background: rgba(0,102,204,0.06); border-left: 4px solid var(--blue);
+    border-radius: 0 12px 12px 0; padding: 14px 18px; margin: 18px 0;
+    font-size: 15px; color: #064a8f;
+  }
+
+  /* ---- requirement cards ---- */
+  .req-grid {
+    display: grid; grid-template-columns: 1fr;
+    gap: 14px; margin: 20px 0 8px;
+  }
+  .req-card {
+    border: 1px solid var(--line); border-radius: 16px; padding: 20px 22px;
+    background: #fff; transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+  }
+  .req-card:hover { transform: translateY(-3px); box-shadow: 0 12px 28px rgba(0,0,0,0.07); border-color: rgba(255,122,24,0.4); }
+  .req-card h4 { font-size: 17px; font-weight: 600; margin-bottom: 4px; }
+  .req-card p { font-size: 14px; color: var(--grey); line-height: 1.5; margin: 0; }
+  .sys-badges { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+  .sys-badges span {
+    font-size: 13px; font-weight: 500; color: var(--ink);
+    background: var(--bg2); border: 1px solid var(--line);
+    padding: 4px 12px; border-radius: 999px;
+  }
+
+  /* ---- doc figure / screenshot ---- */
+  .doc-fig { margin: 22px 0 8px; }
+  .doc-fig img {
+    display: block; width: 100%; max-width: 720px; height: auto;
+    border: 1px solid var(--line); border-radius: 14px;
+    box-shadow: 0 18px 40px rgba(0,0,0,0.12);
+    cursor: zoom-in; transition: transform .25s ease, box-shadow .25s ease;
+  }
+  .doc-fig img:hover { transform: translateY(-2px); box-shadow: 0 22px 50px rgba(0,0,0,0.16); }
+  .doc-fig figcaption {
+    font-size: 13px; color: var(--grey); margin-top: 10px; text-align: center;
+  }
+
+  /* ---- doc FAQ accordion ---- */
+  .doc-faq { margin-top: 10px; }
+  .doc-faq details {
+    border: 1px solid var(--line); border-radius: 12px; margin-bottom: 12px;
+    padding: 2px 18px; transition: box-shadow .2s ease;
+  }
+  .doc-faq details[open] { box-shadow: 0 10px 26px rgba(0,0,0,0.06); }
+  .doc-faq summary {
+    cursor: pointer; list-style: none; padding: 16px 0;
+    font-size: 17px; font-weight: 600; color: var(--ink);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .doc-faq summary::-webkit-details-marker { display: none; }
+  .doc-faq summary::before {
+    content: "Q"; flex-shrink: 0;
+    width: 24px; height: 24px; border-radius: 6px;
+    background: rgba(255,122,24,0.14); color: #ff7a18;
+    display: grid; place-items: center; font-size: 13px; font-weight: 700;
+  }
+  .doc-faq summary::after {
+    content: "+"; margin-left: auto; font-size: 22px; font-weight: 300;
+    color: var(--grey); transition: transform .25s ease;
+  }
+  .doc-faq details[open] summary::after { transform: rotate(45deg); }
+  .doc-faq .a { padding: 0 0 18px 34px; font-size: 15px; color: var(--grey); line-height: 1.65; }
+  .doc-faq .a p { margin: 0 0 10px; }
+
+  /* ---- FAQ search box ---- */
+  .faq-search {
+    position: relative; margin: 4px 0 18px;
+  }
+  .faq-search input {
+    width: 100%; font: inherit; font-size: 15px; color: var(--ink);
+    padding: 12px 40px 12px 42px;
+    background: var(--bg2); border: 1px solid var(--line); border-radius: 12px;
+    outline: none; transition: border-color .2s, box-shadow .2s, background .2s;
+  }
+  .faq-search input::placeholder { color: var(--grey); }
+  .faq-search input:focus {
+    background: #fff; border-color: rgba(255,122,24,0.55);
+    box-shadow: 0 0 0 4px rgba(255,122,24,0.12);
+  }
+  .faq-search svg {
+    position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+    width: 18px; height: 18px; color: var(--grey); pointer-events: none;
+  }
+  .faq-search .fs-clear {
+    position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+    background: rgba(0,0,0,0.08); border: none; cursor: pointer;
+    width: 22px; height: 22px; border-radius: 50%;
+    color: var(--ink); font-size: 14px; line-height: 1; font-weight: 300;
+    display: none; align-items: center; justify-content: center; padding: 0;
+  }
+  .faq-search .fs-clear:hover { background: rgba(0,0,0,0.16); }
+  .faq-search.has-text .fs-clear { display: inline-flex; }
+  .faq-search mark {
+    background: rgba(255,122,24,0.25); color: inherit; border-radius: 3px; padding: 0 2px;
+  }
+  .doc-faq details.faq-hide { display: none; }
+  .faq-empty {
+    display: none; padding: 22px; text-align: center;
+    color: var(--grey); font-size: 14px;
+    border: 1px dashed var(--line); border-radius: 12px;
+  }
+  .faq-empty.show { display: block; }
+
+  /* ---- lightbox (click to zoom) ---- */
+  .lightbox {
+    position: fixed; inset: 0; z-index: 10001;
+    background: rgba(0,0,0,0.85);
+    display: flex; align-items: center; justify-content: center;
+    padding: 40px; opacity: 0; pointer-events: none;
+    transition: opacity .25s ease; cursor: zoom-out;
+    -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px);
+  }
+  .lightbox.open { opacity: 1; pointer-events: auto; }
+  .lightbox img {
+    max-width: 95%; max-height: 92%; border-radius: 12px;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+    transform: scale(.96); transition: transform .25s ease;
+  }
+  .lightbox.open img { transform: scale(1); }
+  .lightbox .lb-close {
+    position: absolute; top: 22px; right: 28px; color: #fff;
+    font-size: 34px; line-height: 1; cursor: pointer; opacity: .8;
+    background: none; border: none; font-weight: 300;
+  }
+  .lightbox .lb-close:hover { opacity: 1; }
+
+  code {
+    font-family:"SF Mono",Consolas,monospace; background: var(--bg2);
+    border: 1px solid var(--line); border-radius: 5px; padding: 2px 6px;
+    font-size: 0.92em; color: #bf4800;
+  }
+  kbd {
+    font-family: inherit; background: var(--bg2); border: 1px solid var(--line);
+    border-bottom-width: 2px; border-radius: 5px; padding: 1px 6px; font-size: 0.88em;
+  }
+
+  /* ---- mobile ---- */
+  .menu-toggle { display: none; }
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar {
+      position: fixed; top: calc(var(--nav-h) + var(--subnav-h)); left: 0; width: 84%; max-width: 320px;
+      height: calc(100vh - var(--nav-h) - var(--subnav-h)); background: var(--bg); z-index: 9000;
+      transform: translateX(-105%); transition: transform .28s ease;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+    }
+    .sidebar.open { transform: translateX(0); }
+    .content { padding: 32px 22px 100px; }
+    .menu-toggle {
+      display: inline-flex; align-items: center; gap: 7px;
+      font-size: 13px; color: var(--ink); background: none; border: none; cursor: pointer;
+    }
+    .menu-toggle b { font-size: 16px; }
+    .scrim {
+      position: fixed; inset: calc(var(--nav-h) + var(--subnav-h)) 0 0 0; background: rgba(0,0,0,0.3);
+      z-index: 8000; opacity: 0; pointer-events: none; transition: opacity .28s;
+    }
+    .scrim.show { opacity: 1; pointer-events: auto; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- TOP NOTICE -->
+  <div class="top-notice" id="topNotice">
+    <strong>温馨提示：</strong>连续会话不会自动保存每次的代码改动，请<strong>及时查看代码并保存进度</strong>。
+    <button class="tn-close" id="tnClose" aria-label="关闭提示">&times;</button>
+  </div>
+
+  <!-- TOP NAV -->
+  <nav class="nav">
+    <div class="nav-inner">
+      <div class="nav-logo"><span class="logo">CC</span> Cursor Continue</div>
+      <button class="menu-toggle" id="menuToggle"><b>☰</b> 目录</button>
+      <div class="nav-menu">
+        <a href="index.html">首页</a>
+        <a href="#install">开始使用</a>
+        <a href="index.html#pricing">卡密</a>
+        <a href="index.html#faq">支持</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- SECONDARY HORIZONTAL JUMP BAR (条状) -->
+  <div class="subnav">
+    <div class="subnav-inner">
+      <span class="subnav-title">开始使用</span>
+      <div class="subnav-links" id="subnavLinks">
+        <a href="#intro" data-sec>简介</a>
+        <a href="#requirements" data-sec>环境要求</a>
+        <a href="#account" data-sec>账号设置</a>
+        <a href="#ide-settings" data-sec>IDE 设置</a>
+        <a href="#install" data-sec>安装插件</a>
+        <a href="#activate" data-sec>激活卡密</a>
+        <a href="#sync" data-sec>同步配置</a>
+        <a href="#first-message" data-sec>第一条消息</a>
+        <a href="#continue" data-sec>持续对话</a>
+        <a href="#attachments" data-sec>附件与图片</a>
+        <a href="#end" data-sec>结束对话</a>
+        <a href="#tips" data-sec>使用技巧</a>
+        <a href="#troubleshoot" data-sec>常见问题</a>
+      </div>
+      <a class="subnav-cta" href="https://a8.al" target="_blank" rel="noopener">获取卡密</a>
+    </div>
+  </div>
+
+  <div class="scrim" id="scrim"></div>
+
+  <div class="layout">
+
+    <!-- SIDEBAR MENU -->
+    <aside class="sidebar" id="sidebar">
+      <h1>开始使用</h1>
+      <p class="tagline">几分钟，让 Cursor AI 持续为你工作。</p>
+
+      <nav class="menu-group">
+        <div class="g-title">准备工作</div>
+        <ul>
+          <li><a href="#intro" data-sec>简介</a></li>
+          <li><a href="#requirements" data-sec>环境要求</a></li>
+        </ul>
+      </nav>
+
+      <nav class="menu-group">
+        <div class="g-title">安装与激活</div>
+        <ul>
+          <li><a href="#account" data-sec>账号设置</a></li>
+          <li><a href="#ide-settings" data-sec>IDE 设置</a></li>
+          <li><a href="#install" data-sec>安装插件</a></li>
+          <li><a href="#activate" data-sec>激活卡密</a></li>
+          <li><a href="#sync" data-sec>同步配置</a></li>
+        </ul>
+      </nav>
+
+      <nav class="menu-group">
+        <div class="g-title">开始协作</div>
+        <ul>
+          <li><a href="#first-message" data-sec>发送第一条消息</a></li>
+          <li><a href="#continue" data-sec>持续对话</a></li>
+          <li><a href="#attachments" data-sec>附件与图片</a></li>
+          <li><a href="#end" data-sec>结束对话</a></li>
+        </ul>
+      </nav>
+
+      <nav class="menu-group">
+        <div class="g-title">进阶</div>
+        <ul>
+          <li><a href="#tips" data-sec>使用技巧</a></li>
+          <li><a href="#troubleshoot" data-sec>常见问题</a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- CONTENT -->
+    <main class="content">
+
+      <section class="doc-section" id="intro">
+        <h2>简介</h2>
+        <p class="lead">让 Cursor AI 持续工作的协作扩展。</p>
+        <p>通过底部面板与 Cursor 保持不间断对话，无需反复手动发送消息。Cursor 完成一个任务后会自动等待你的下一条指令，让协作循环不中断，把你从重复操作中解放出来。</p>
+      </section>
+
+      <section class="doc-section" id="requirements">
+        <h2>环境要求</h2>
+        <p class="lead">开始之前，请确认你的环境满足以下条件。</p>
+        <div class="req-grid">
+          <div class="req-card">
+            <h4>Cursor Pro 账号</h4>
+            <p>需登录具备 Pro 权限的 Cursor 账号，以保证 AI 功能正常使用。</p>
+          </div>
+          <div class="req-card">
+            <h4>网络代理</h4>
+            <p>使用过程中需保持稳定的网络代理连接，插件会定期验证授权。</p>
+          </div>
+          <div class="req-card">
+            <h4>操作系统</h4>
+            <p>支持主流桌面操作系统，任选其一即可。</p>
+            <div class="sys-badges">
+              <span>Windows</span>
+              <span>macOS</span>
+              <span>Linux</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="doc-section" id="account">
+        <h2>账号设置</h2>
+        <p class="lead">开启账号超额，保证额度用尽后 AI 仍可继续工作。</p>
+        <p>在 Cursor 账号设置中开启「超额（Usage-based / 超额用量）」，这样当订阅额度用尽后，AI 请求仍能继续使用，避免持续协作中途中断。</p>
+        <figure class="doc-fig">
+          <img src="img/02.png" alt="Cursor 账号开启超额设置">
+          <figcaption>在账号设置中开启超额用量。</figcaption>
+        </figure>
+      </section>
+
+      <section class="doc-section" id="ide-settings">
+        <h2>IDE 设置</h2>
+        <p class="lead">将网络模式改为 HTTP/1.1，提升连接稳定性。</p>
+        <p>打开 Cursor 设置，找到 <strong>Network</strong> 相关选项，将其改为 <code>HTTP/1</code>（HTTP1.1）模式，以保证插件与服务端的通信更稳定。</p>
+        <figure class="doc-fig">
+          <img src="img/03.png" alt="Cursor 网络模式改为 HTTP1.1">
+          <figcaption>将 Network 模式设置为 HTTP/1.1。</figcaption>
+        </figure>
+      </section>
+
+      <section class="doc-section" id="install">
+        <h2>安装插件</h2>
+        <p class="lead">通过 VSIX 文件将插件安装到 Cursor。</p>
+        <ol>
+          <li>打开 <strong>Cursor</strong>。</li>
+          <li>按 <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>，输入 <code>Extensions: Install from VSIX...</code>。</li>
+          <li>选择 <code>cursor-continue-x.x.x.vsix</code> 文件。</li>
+          <li>等待安装完成，Cursor 会自动重载；若没有自动重启，请<strong>手动重启 Cursor</strong>。</li>
+        </ol>
+        <div class="callout">
+          ✅ 安装完成后，Cursor 的提问框中会出现橙色的 <strong>CC 图标</strong>，代表插件已准备就绪。
+        </div>
+        <figure class="doc-fig">
+          <img src="img/04.png" alt="提问框出现橙色 CC 图标">
+          <figcaption>提问框右下角出现橙色 CC 图标，即表示安装成功、准备完成。</figcaption>
+        </figure>
+      </section>
+
+      <section class="doc-section" id="activate">
+        <h2>激活卡密</h2>
+        <p class="lead">使用卡密激活插件，开启协作功能。</p>
+        <ol>
+          <li>安装后底部会出现 <code>Cursor Continue</code> 面板。</li>
+          <li>输入你的卡密（格式：<code>CCG-XXXX-XXXX-XXXX-XXXX</code>）。</li>
+          <li>点击「<strong>激活</strong>」。</li>
+          <li>看到「<strong>已激活</strong>」即完成。</li>
+        </ol>
+        <figure class="doc-fig">
+          <img src="img/01.png" alt="Cursor Continue 插件面板展示">
+          <figcaption>Cursor Continue 面板位于 Cursor 底部，提供「同步配置」「检测状态」等操作。</figcaption>
+        </figure>
+        <div class="callout">
+          🛒 还没有卡密？前往购买地址：<a href="https://a8.al" target="_blank" rel="noopener"><strong>A8.AL</strong></a>
+        </div>
+      </section>
+
+      <section class="doc-section" id="sync">
+        <h2>同步配置</h2>
+        <p class="lead">部署工作区配置，并检测插件运行状态。</p>
+        <ol>
+          <li>点击面板中的「<strong>同步配置</strong>」，使用默认配置即可，等待部署完成。</li>
+          <li>点击「<strong>检测状态</strong>」，即可查看当前运行状态。</li>
+          <li>状态正常如下图所示，即表示配置成功、可以开始使用。</li>
+        </ol>
+        <figure class="doc-fig">
+          <img src="img/05.png" alt="检测状态显示正常">
+          <figcaption>点击「检测状态」后显示的正常状态。</figcaption>
+        </figure>
+      </section>
+
+      <section class="doc-section" id="first-message">
+        <h2>发送第一条消息</h2>
+        <p class="lead">用橙色 CC 图标发送第一条消息，建立与 Cursor 的会话连接。</p>
+        <ol>
+          <li>在 Cursor IDE 的提问框中输入第一条消息，例如「<strong>你好</strong>」。</li>
+          <li>点击提问框右下角的橙色 <strong>CC 图标</strong>，发送消息并连接会话。</li>
+          <li>插件会自动尝试连接会话，期间可能<strong>反复重试连接</strong>，属于正常现象，请耐心等待连接完成。</li>
+          <li>连接成功后如下图所示，即可开始持续对话。</li>
+        </ol>
+        <div class="callout">
+          💡 第一条消息<strong>必须</strong>用橙色 CC 图标发送，它负责建立会话连接；之后的消息只需在底部面板输入框中输入即可。
+        </div>
+
+        <h3>关于模型选择</h3>
+        <ul>
+          <li>连接会话前请<span class="text-warn">先选择好模型</span>。</li>
+          <li>连接成功后再切换模型<span class="text-warn">无实际用途</span>，会话仍使用初始连接时的模型。</li>
+          <li>若最高级模型一直无法连接成功，可以尝试<span class="text-warn">切换到其他模型</span>再试。</li>
+        </ul>
+
+        <figure class="doc-fig">
+          <img src="img/06.png" alt="会话连接成功">
+          <figcaption>会话连接成功的状态。</figcaption>
+        </figure>
+      </section>
+
+      <section class="doc-section" id="continue">
+        <h2>持续对话</h2>
+        <p class="lead">连接成功后，在插件面板中持续对话，无需手动操作。</p>
+        <p>连接成功后，就可以在插件底部面板的<strong>对话框</strong>中输入会话内容，按 <kbd>Enter</kbd> 发送。Cursor 完成当前任务后会自动等待你的下一条指令，如此循环往复，持续对话无需反复手动发送消息。</p>
+        <figure class="doc-fig">
+          <img src="img/07.png" alt="在插件面板对话框中输入会话">
+          <figcaption>在插件底部面板的对话框中输入会话内容，按 Enter 发送。</figcaption>
+        </figure>
+      </section>
+
+      <section class="doc-section" id="attachments">
+        <h2>附件与图片</h2>
+        <p class="lead">在对话中附加文件或图片，补充更多上下文。</p>
+
+        <h3>附件</h3>
+        <p>复制文件的<strong>相对路径</strong>（例如 <code>页面01\页面03</code>），粘贴到对话框即可附加该文件。</p>
+        <figure class="doc-fig">
+          <img src="img/08.png" alt="粘贴文件相对路径以附加附件">
+          <figcaption>复制文件的相对路径并粘贴到对话框，即可附加附件。</figcaption>
+        </figure>
+
+        <h3>图片</h3>
+        <p>直接在对话框中<strong>粘贴图片</strong>即可，开箱即用的多模态协作。</p>
+        <figure class="doc-fig">
+          <img src="img/09.png" alt="直接在对话框中粘贴图片">
+          <figcaption>在对话框中直接粘贴图片。</figcaption>
+        </figure>
+      </section>
+
+      <section class="doc-section" id="end">
+        <h2>结束对话</h2>
+        <p class="lead">随时结束当前会话。</p>
+        <p>在 Cursor IDE 中点击「<strong>停止会话</strong>」即可结束当前对话。</p>
+      </section>
+
+      <section class="doc-section" id="tips">
+        <h2>使用技巧</h2>
+        <p class="lead">一些提升使用体验的小技巧。</p>
+        <ul>
+          <li>连接会话时可能需要<strong>多次重试</strong>，属于正常现象，请耐心等待。</li>
+          <li>连接成功率与<strong>网络环境</strong>及<strong>代理质量</strong>密切相关，建议使用稳定的网络与代理以提升成功率。</li>
+        </ul>
+      </section>
+
+      <section class="doc-section" id="troubleshoot">
+        <h2>常见问题</h2>
+        <p class="lead">使用中遇到问题？这里也许有答案。</p>
+        <div class="faq-search" id="faqSearch">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="11" cy="11" r="7"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input type="search" id="faqInput" placeholder="搜索关键字，例如：中断、unpaid、连接…" autocomplete="off">
+          <button class="fs-clear" id="faqClear" type="button" aria-label="清空">&times;</button>
+        </div>
+        <div class="doc-faq" id="docFaq">
+          <details open>
+            <summary>会话中断</summary>
+            <div class="a">按照「<a href="#first-message">发送第一条消息</a>」的步骤重新连接即可。</div>
+          </details>
+          <details>
+            <summary>提示 You have an unpaid invoice</summary>
+            <div class="a">
+              <p>出现下图所示提示时，按照「<a href="#first-message">发送第一条消息</a>」的步骤重新连接即可。</p>
+              <figure class="doc-fig">
+                <img src="img/10.png" alt="You have an unpaid invoice 提示">
+                <figcaption>You have an unpaid invoice 报错示例。</figcaption>
+              </figure>
+            </div>
+          </details>
+        </div>
+        <div class="faq-empty" id="faqEmpty">没有找到相关问题，换个关键字试试。</div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- LIGHTBOX -->
+  <div class="lightbox" id="lightbox">
+    <button class="lb-close" id="lbClose" aria-label="关闭">&times;</button>
+    <img id="lbImg" src="" alt="">
+  </div>
+
+<script>
+  // top notice close
+  const topNotice = document.getElementById('topNotice');
+  document.getElementById('tnClose')?.addEventListener('click', () => topNotice.classList.add('hide'));
+
+  // mobile drawer
+  const sidebar = document.getElementById('sidebar');
+  const scrim = document.getElementById('scrim');
+  const toggle = document.getElementById('menuToggle');
+  function closeMenu(){ sidebar.classList.remove('open'); scrim.classList.remove('show'); }
+  toggle?.addEventListener('click', () => {
+    sidebar.classList.toggle('open');
+    scrim.classList.toggle('show');
+  });
+  scrim?.addEventListener('click', closeMenu);
+
+  // active highlight on scroll + click (both sidebar menu and horizontal bar)
+  const links = [...document.querySelectorAll('[data-sec]')];
+  const byId = new Map();
+  links.forEach(a => {
+    const id = a.getAttribute('href').slice(1);
+    if (!byId.has(id)) byId.set(id, []);
+    byId.get(id).push(a);
+  });
+  links.forEach(a => a.addEventListener('click', closeMenu));
+  const subnavLinks = document.getElementById('subnavLinks');
+
+  // scroll-spy based on scroll position (robust for short trailing sections)
+  const sections = [...document.querySelectorAll('.doc-section')];
+  const content = document.querySelector('.content');
+  const triggerLine = 140; // distance from viewport top (under nav + subnav)
+  let activeId = null;
+
+  function setActive(id) {
+    if (id === activeId) return;
+    activeId = id;
+    links.forEach(l => l.classList.remove('active'));
+    (byId.get(id) || []).forEach(l => {
+      l.classList.add('active');
+      // keep active pill visible in the horizontal jump bar
+      if (l.parentElement === subnavLinks) {
+        l.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
+      }
+    });
+  }
+
+  // give the content enough trailing room so every section (incl. the last,
+  // short ones) can scroll up to the trigger line and get highlighted
+  function adjustBottomPad() {
+    const last = sections[sections.length - 1];
+    if (!last) return;
+    const lastH = last.getBoundingClientRect().height;
+    const needed = Math.max(120, Math.ceil(window.innerHeight - triggerLine - lastH + 40));
+    content.style.paddingBottom = needed + 'px';
+  }
+
+  function updateActive() {
+    let currentId = sections[0]?.id;
+    for (const sec of sections) {
+      if (sec.getBoundingClientRect().top <= triggerLine) currentId = sec.id;
+    }
+    if (currentId) setActive(currentId);
+  }
+
+  function refresh() { adjustBottomPad(); updateActive(); }
+  window.addEventListener('scroll', updateActive, { passive: true });
+  window.addEventListener('resize', refresh);
+  window.addEventListener('load', refresh);
+  refresh();
+
+  // lightbox: click any doc image to zoom
+  const lightbox = document.getElementById('lightbox');
+  const lbImg = document.getElementById('lbImg');
+  const lbClose = document.getElementById('lbClose');
+  function openLightbox(src, alt) {
+    lbImg.src = src; lbImg.alt = alt || '';
+    lightbox.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeLightbox() {
+    lightbox.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  document.querySelectorAll('.doc-fig img').forEach(img => {
+    img.addEventListener('click', () => openLightbox(img.currentSrc || img.src, img.alt));
+  });
+  lightbox.addEventListener('click', closeLightbox);
+  lbClose.addEventListener('click', closeLightbox);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+
+  // FAQ search / filter with keyword highlight
+  const faqWrap = document.getElementById('faqSearch');
+  const faqInput = document.getElementById('faqInput');
+  const faqClear = document.getElementById('faqClear');
+  const faqEmpty = document.getElementById('faqEmpty');
+  const faqItems = [...document.querySelectorAll('#docFaq details')].map(d => {
+    const sum = d.querySelector('summary');
+    const ans = d.querySelector('.a');
+    return {
+      el: d, sum, ans,
+      sumOriginal: sum.innerHTML,
+      ansOriginal: ans.innerHTML,
+      text: (sum.textContent + ' ' + ans.textContent).toLowerCase()
+    };
+  });
+
+  function escapeHtml(s) { return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+  function escapeReg(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+
+  // Replace text nodes only (don't touch tags or attributes)
+  function highlightIn(container, regex) {
+    const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT, null);
+    const targets = [];
+    let n; while ((n = walker.nextNode())) {
+      if (n.parentElement.closest('mark')) continue;
+      if (regex.test(n.nodeValue)) targets.push(n);
+      regex.lastIndex = 0;
+    }
+    targets.forEach(node => {
+      const frag = document.createDocumentFragment();
+      const parts = node.nodeValue.split(regex);
+      const matches = node.nodeValue.match(regex) || [];
+      parts.forEach((part, i) => {
+        frag.appendChild(document.createTextNode(part));
+        if (i < parts.length - 1) {
+          const m = document.createElement('mark');
+          m.textContent = matches[i];
+          frag.appendChild(m);
+        }
+      });
+      node.parentNode.replaceChild(frag, node);
+    });
+  }
+
+  function applyFaqFilter() {
+    const raw = faqInput.value.trim();
+    const q = raw.toLowerCase();
+    faqWrap.classList.toggle('has-text', raw.length > 0);
+    let visible = 0;
+    const regex = raw ? new RegExp(escapeReg(raw), 'gi') : null;
+    faqItems.forEach(it => {
+      // restore originals
+      it.sum.innerHTML = it.sumOriginal;
+      it.ans.innerHTML = it.ansOriginal;
+      const match = !q || it.text.includes(q);
+      it.el.classList.toggle('faq-hide', !match);
+      if (match) {
+        visible++;
+        if (regex) {
+          highlightIn(it.sum, regex);
+          highlightIn(it.ans, regex);
+          it.el.open = true;
+        }
+      }
+    });
+    faqEmpty.classList.toggle('show', visible === 0);
+  }
+
+  faqInput.addEventListener('input', applyFaqFilter);
+  faqClear.addEventListener('click', () => { faqInput.value = ''; applyFaqFilter(); faqInput.focus(); });
+  faqInput.addEventListener('keydown', e => { if (e.key === 'Escape') { faqInput.value = ''; applyFaqFilter(); } });
+</script>
+</body>
+</html>
