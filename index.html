@@ -474,6 +474,19 @@
   .dl-btn svg { width: 18px; height: 18px; flex-shrink: 0; }
   .dl-hint { font-size: 14px; color: var(--grey); }
 
+  /* ---- error / region notice box ---- */
+  .err-box {
+    background: rgba(217,59,59,0.06);
+    border: 1px solid rgba(217,59,59,0.22);
+    border-left: 4px solid #d93b3b;
+    border-radius: 0 12px 12px 0;
+    padding: 13px 18px; margin: 14px 0;
+  }
+  .err-box .err-title { font-size: 15px; font-weight: 700; color: #c0392b; margin-bottom: 3px; }
+  .err-box .err-desc { font-size: 14px; color: #9b4a4a; line-height: 1.55; font-family: "SF Mono",Consolas,monospace; }
+  .callout ol { margin: 8px 0 0; padding-left: 20px; }
+  .callout ol li { font-size: 15px; margin: 5px 0; line-height: 1.55; }
+
   /* ---- requirement cards ---- */
   .req-grid {
     display: grid; grid-template-columns: 1fr;
@@ -863,6 +876,7 @@
           <ul>
             <li><a href="#account" data-sec>账号设置</a></li>
             <li><a href="#ide-settings" data-sec>IDE 设置</a></li>
+            <li><a href="#proxy" data-sec>关于代理设置</a></li>
             <li><a href="#install" data-sec>安装插件</a></li>
             <li><a href="#activate" data-sec>激活卡密</a></li>
             <li><a href="#sync" data-sec>同步配置</a></li>
@@ -938,6 +952,50 @@
         <figure class="doc-fig">
           <img src="img/03.png" alt="Cursor 网络模式改为 HTTP1.1">
           <figcaption>将 Network 模式设置为 HTTP/1.1。</figcaption>
+        </figure>
+      </section>
+
+      <section class="doc-section" id="proxy">
+        <h3 class="doc-title">关于代理设置</h3>
+        <p class="lead">模型无法使用，多为地区限制导致，需正确配置代理。</p>
+
+        <h4>情况一：模型不可用（地区限制）</h4>
+        <p>当出现下方报错时，说明该模型不对你当前所在地区提供服务：</p>
+        <div class="err-box">
+          <div class="err-title">Model not available</div>
+          <div class="err-desc">This model provider doesn't serve your region.</div>
+        </div>
+        <figure class="doc-fig">
+          <img src="img/11.png" alt="Model not available 地区限制报错">
+          <figcaption>Model not available：该模型不对当前地区提供服务。</figcaption>
+        </figure>
+        <p><strong>原因：</strong>Cursor 对中国大陆地区限制使用，大陆网络直连会被拒绝。</p>
+        <div class="callout">
+          <strong>解决方法：</strong>
+          <ol>
+            <li>开启代理的「<strong>全局模式</strong>」，并启用「<strong>TUN 模式</strong>」。</li>
+            <li>在 Cursor 设置中将 <strong>Network</strong> 模式设为 <code>HTTP/1.1</code>。</li>
+            <li>完成后重启 Cursor 并重新连接。</li>
+          </ol>
+        </div>
+
+        <h4>情况二：代理为「规则模式」</h4>
+        <p>如果你的代理使用的是<strong>规则模式</strong>（而非全局模式），需要在 IDE 中手动配置代理（proxy）才能正常连接。</p>
+        <figure class="doc-fig">
+          <img src="img/12.png" alt="代理处于规则模式">
+          <figcaption>代理处于「规则模式」。</figcaption>
+        </figure>
+        <div class="callout">
+          <strong>解决方法：</strong>
+          <ol>
+            <li>在 Cursor 设置中找到 <strong>Proxy</strong>（代理）选项，填入本地代理地址，例如 <code>http://127.0.0.1:7890</code>。</li>
+            <li><span class="text-warn">代理端口需根据你自己代理软件的实际端口填写</span>，请勿照抄示例端口。</li>
+            <li>保存后重启 Cursor 并重新连接。</li>
+          </ol>
+        </div>
+        <figure class="doc-fig">
+          <img src="img/13.png" alt="在 IDE 中配置代理地址与端口">
+          <figcaption>在 IDE 中配置代理地址，端口按自己的实际端口填写。</figcaption>
         </figure>
       </section>
 
