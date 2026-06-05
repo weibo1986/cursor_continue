@@ -459,6 +459,40 @@
     font-size: 15px; color: #064a8f;
   }
 
+  /* ---- docs top safety notice (under guide title) ---- */
+  .docs-safety {
+    max-width: 980px; margin: 18px auto 6px;
+    display: flex; align-items: flex-start; gap: 14px;
+    padding: 14px 20px;
+    background: linear-gradient(90deg, #fff4e6, #fff8ef);
+    border: 1px solid rgba(255,122,24,0.35);
+    border-left: 4px solid var(--brand);
+    border-radius: 14px;
+    box-shadow: 0 6px 20px rgba(255,122,24,0.12);
+    color: #7a3a07;
+    font-size: 14.5px; line-height: 1.6;
+    text-align: left;
+  }
+  .docs-safety .ds-icon {
+    flex-shrink: 0;
+    width: 32px; height: 32px; border-radius: 9px;
+    display: grid; place-items: center;
+    background: linear-gradient(135deg, var(--brand), var(--brand2));
+    color: #fff; font-size: 18px; font-weight: 700;
+    box-shadow: 0 4px 12px rgba(255,122,24,0.4);
+  }
+  .docs-safety .ds-text { flex: 1; min-width: 0; }
+  .docs-safety .ds-title {
+    font-size: 14.5px; font-weight: 700; color: #b3530a;
+    margin: 0 0 2px; letter-spacing: 0.2px;
+  }
+  .docs-safety .ds-desc { margin: 0; color: #7a3a07; }
+  .docs-safety strong { color: #b3530a; font-weight: 700; }
+  @media (max-width: 600px) {
+    .docs-safety { margin: 14px 14px 4px; padding: 12px 14px; font-size: 13.5px; gap: 10px; }
+    .docs-safety .ds-icon { width: 28px; height: 28px; font-size: 16px; }
+  }
+
   /* ---- download button ---- */
   .dl-wrap { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin: 6px 0 20px; }
   .dl-btn {
@@ -856,6 +890,15 @@
     <div class="eyebrow reveal">使用文档</div>
     <h2 class="reveal d1">完整使用指南。</h2>
     <p class="desc reveal d2">从安装到持续协作，详细步骤一站直达。</p>
+
+    <!-- safety / antivirus notice -->
+    <div class="docs-safety reveal d3" role="note" aria-label="安全提示">
+      <div class="ds-icon" aria-hidden="true">!</div>
+      <div class="ds-text">
+        <p class="ds-title">安全提示</p>
+        <p class="ds-desc">本插件需要<strong>注入本地文件</strong>以实现持续对话与桥接功能，部分<strong>杀毒软件 / 系统安全中心</strong>可能会弹出警告。这是正常现象，请<strong>选择「信任」或「允许」</strong>后继续即可，插件不会上传或读取你的个人数据。</p>
+      </div>
+    </div>
 
     <!-- mobile menu toggle (only visible on small screens) -->
     <button class="docs-menu-toggle" id="docsMenuToggle" type="button"><b>☰</b> 目录</button>
