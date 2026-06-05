@@ -617,6 +617,13 @@
     font-size: 12px; font-weight: 700; padding: 5px 13px; border-radius: 999px;
     box-shadow: 0 4px 12px rgba(255,122,24,0.5);
   }
+  .price-tag {
+    display: flex; align-items: baseline; justify-content: center; gap: 3px;
+    margin: 14px 0 2px; color: #fff; line-height: 1;
+    font-size: 46px; font-weight: 700; letter-spacing: -1px;
+  }
+  .price-tag .cur { font-size: 22px; font-weight: 600; color: var(--brand2); transform: translateY(-2px); }
+  .price-tag .per { font-size: 14px; font-weight: 500; color: var(--grey); letter-spacing: 0; margin-left: 2px; }
 
   /* ---------- CTA BAND ---------- */
   .cta-band { max-width: 1024px; margin: 0 auto; padding: 0 12px; }
@@ -699,6 +706,7 @@
     .docs-toc { gap: 5px; margin: 16px auto 24px; }
     .price-card { padding: 36px 20px; }
     .price-card h3 { font-size: 30px; }
+    .price-tag { font-size: 38px; }
     .badge-hot { top: 12px; right: 12px; font-size: 11px; padding: 4px 11px; }
     .section { padding: 60px 18px; }
     #docs { padding-top: 60px; padding-bottom: 60px; }
@@ -753,7 +761,7 @@
     <p class="sub reveal d2">让 Cursor AI 不间断为你工作。</p>
     <p class="desc reveal d3">通过底部面板与 Cursor 保持连续对话，告别反复手动发送消息。一次配置，长效协作。</p>
     <div class="actions reveal d4">
-      <a class="link" href="plug/cursorContinue.vsix" download="cursor-continue.vsix">下载插件</a>
+      <!-- <a class="link" href="plug/cursorContinue.vsix" download="cursor-continue.vsix">下载插件</a> -->
       <a class="link" href="#docs">了解使用方法</a>
       <a class="link" href="https://a8.al" target="_blank" rel="noopener">获取卡密</a>
     </div>
@@ -913,7 +921,7 @@
       <section class="doc-section" id="install">
         <h3 class="doc-title">安装插件</h3>
         <p class="lead">通过 VSIX 文件将插件安装到 Cursor。</p>
-        <div class="dl-wrap">
+        <!-- <div class="dl-wrap">
           <a class="dl-btn" href="plug/cursorContinue.vsix" download="cursor-continue.vsix">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
@@ -923,7 +931,7 @@
             下载插件（VSIX）
           </a>
           <span class="dl-hint">下载后按下方步骤安装</span>
-        </div>
+        </div> -->
         <ol>
           <li>打开 <strong>Cursor</strong>。</li>
           <li>按 <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>，输入 <code>Extensions: Install from VSIX...</code>。</li>
@@ -1111,6 +1119,7 @@
       <div class="tile dark price-card reveal" style="background:#1d1d1f;">
         <h3>日卡</h3>
         <p class="sub">轻量体验</p>
+        <div class="price-tag"><span class="cur">¥</span>15.88<span class="per">/ 天</span></div>
         <p class="desc">完整功能 · 单设备绑定 · 持续对话 · 文件与图片支持</p>
         <p class="price">有效期 1 天</p>
         <div class="actions"><a class="link" href="https://a8.al" target="_blank" rel="noopener">获取日卡</a></div>
@@ -1119,6 +1128,7 @@
         <span class="badge-hot">推荐</span>
         <h3>周卡</h3>
         <p class="sub">高效之选</p>
+        <div class="price-tag"><span class="cur">¥</span>68.88<span class="per">/ 周</span></div>
         <p class="desc">含日卡全部功能 · 更长有效期 · 性价比更高 · 重装可复用</p>
         <p class="price">有效期 7 天</p>
         <div class="actions"><a class="link" href="https://a8.al" target="_blank" rel="noopener">获取周卡</a></div>
