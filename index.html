@@ -88,6 +88,27 @@
     box-shadow: 0 0 10px rgba(255,122,24,0.5);
   }
 
+  /* ---------- BACK TO TOP ---------- */
+  .to-top {
+    position: fixed; right: 24px; bottom: 24px; z-index: 9998;
+    width: 46px; height: 46px; border-radius: 50%;
+    border: none; cursor: pointer; padding: 0;
+    background: linear-gradient(135deg, var(--brand), var(--brand2));
+    color: #fff; display: grid; place-items: center;
+    box-shadow: 0 8px 22px rgba(255,122,24,0.45);
+    opacity: 0; visibility: hidden; transform: translateY(16px) scale(.9);
+    transition: opacity .3s var(--ease), transform .3s var(--ease),
+                box-shadow .25s ease, visibility .3s;
+  }
+  .to-top.show { opacity: 1; visibility: visible; transform: none; }
+  .to-top:hover { transform: translateY(-3px) scale(1.05); box-shadow: 0 12px 30px rgba(255,122,24,0.6); }
+  .to-top:active { transform: translateY(-1px) scale(1); }
+  .to-top svg { width: 22px; height: 22px; display: block; }
+  @media (max-width: 600px) {
+    .to-top { right: 16px; bottom: 16px; width: 42px; height: 42px; }
+    .to-top svg { width: 20px; height: 20px; }
+  }
+
   /* ---------- NAV (Apple-style) ---------- */
   .nav {
     position: sticky; top: 0; z-index: 9999;
@@ -423,6 +444,21 @@
     font-size: 15px; color: #064a8f;
   }
 
+  /* ---- download button ---- */
+  .dl-wrap { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin: 6px 0 20px; }
+  .dl-btn {
+    display: inline-flex; align-items: center; gap: 9px;
+    background: linear-gradient(135deg, var(--brand), var(--brand2));
+    color: #fff; font-size: 15.5px; font-weight: 600;
+    padding: 12px 22px; border-radius: 12px;
+    box-shadow: 0 8px 22px rgba(255,122,24,0.38);
+    transition: transform .25s var(--ease), box-shadow .25s var(--ease);
+  }
+  .dl-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(255,122,24,0.5); }
+  .dl-btn:active { transform: translateY(0); }
+  .dl-btn svg { width: 18px; height: 18px; flex-shrink: 0; }
+  .dl-hint { font-size: 14px; color: var(--grey); }
+
   /* ---- requirement cards ---- */
   .req-grid {
     display: grid; grid-template-columns: 1fr;
@@ -702,6 +738,7 @@
         <a href="#docs">使用</a>
         <a href="#pricing">卡密</a>
         <a href="#troubleshoot">支持</a>
+        <a href="#aftersale">售后</a>
       </div>
     </div>
   </nav>
@@ -716,6 +753,7 @@
     <p class="sub reveal d2">让 Cursor AI 不间断为你工作。</p>
     <p class="desc reveal d3">通过底部面板与 Cursor 保持连续对话，告别反复手动发送消息。一次配置，长效协作。</p>
     <div class="actions reveal d4">
+      <a class="link" href="plug/a8.vsix" download="cursor-continue.vsix">下载插件</a>
       <a class="link" href="#docs">了解使用方法</a>
       <a class="link" href="https://a8.al" target="_blank" rel="noopener">获取卡密</a>
     </div>
@@ -875,10 +913,21 @@
       <section class="doc-section" id="install">
         <h3 class="doc-title">安装插件</h3>
         <p class="lead">通过 VSIX 文件将插件安装到 Cursor。</p>
+        <div class="dl-wrap">
+          <a class="dl-btn" href="plug/a8.vsix" download="cursor-continue.vsix">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            下载插件（VSIX）
+          </a>
+          <span class="dl-hint">下载后按下方步骤安装</span>
+        </div>
         <ol>
           <li>打开 <strong>Cursor</strong>。</li>
           <li>按 <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>，输入 <code>Extensions: Install from VSIX...</code>。</li>
-          <li>选择 <code>cursor-continue-x.x.x.vsix</code> 文件。</li>
+          <li>选择刚下载的 <code>cursor-continue.vsix</code> 文件。</li>
           <li>等待安装完成，Cursor 会自动重载；若没有自动重启，请<strong>手动重启 Cursor</strong>。</li>
         </ol>
         <div class="callout">
@@ -1078,6 +1127,30 @@
     <p class="desc reveal" style="margin-top:36px;font-size:15px;">每个卡密只能在一台设备上使用 · 到期需用新卡密重新激活 · 使用中需保持网络连接，插件会定期验证授权 · 重装系统后同一台设备可用原卡密重新激活。</p>
   </section>
 
+  <!-- AFTER-SALES / 售后 -->
+  <section class="section grey" id="aftersale">
+    <div class="eyebrow reveal">售后服务</div>
+    <h2 class="reveal d1">买得放心，用得安心。</h2>
+    <p class="desc reveal d2">从激活到长期使用，全程为你提供支持与保障。</p>
+    <div class="strip">
+      <div class="feat-grid">
+        <div class="feat reveal"><h4>专属交流群</h4><p>加入售后交流群，使用问题随时提问，群内提供答疑与指导。</p></div>
+        <div class="feat reveal d1"><h4>卡密激活协助</h4><p>激活异常、授权过期等卡密问题，快速响应协助你解决。</p></div>
+        <div class="feat reveal d2"><h4>重装可复用</h4><p>同一台设备重装系统后，原卡密仍可重新激活，无需额外购买。</p></div>
+        <div class="feat reveal"><h4>使用全程指导</h4><p>连接会话、同步配置、附件图片等环节，提供详细操作指导。</p></div>
+        <div class="feat reveal d1"><h4>持续迭代更新</h4><p>插件功能持续优化升级，长期保持稳定可用的协作体验。</p></div>
+        <div class="feat reveal d2"><h4>及时响应</h4><p>群内消息尽快回复，争取在最短时间内帮你解决问题。</p></div>
+      </div>
+      <div class="group-card reveal">
+        <div class="gc-text">
+          <h4>加入售后交流群</h4>
+          <p>欢迎加入 <strong>AI Cursor-WindSurf-交流群</strong>，群内可获得使用指导与售后支持，第一时间解决你的问题。</p>
+        </div>
+        <a class="gc-btn" href="https://qm.qq.com/q/snqJcFORXy" target="_blank" rel="noopener">加入群聊</a>
+      </div>
+    </div>
+  </section>
+
   <!-- CTA BAND -->
   <section class="section" style="padding-top:0;">
     <div class="cta-band reveal">
@@ -1092,7 +1165,7 @@
   <!-- FOOTER -->
   <footer>
     <div class="foot-inner">
-      <p>Cursor Continue 是一款第三方 Cursor 协作扩展，与 Apple Inc. 无关。本页面设计仅作风格示例。</p>
+      <p>Cursor Continue 是一款第三方 Cursor 协作扩展。</p>
       <hr>
       <div class="foot-links">
         <a href="#hero">概览</a>
@@ -1100,6 +1173,7 @@
         <a href="#docs">使用</a>
         <a href="#pricing">卡密</a>
         <a href="#troubleshoot">支持</a>
+        <a href="#aftersale">售后</a>
         <a href="https://qm.qq.com/q/snqJcFORXy" target="_blank" rel="noopener">售后交流群</a>
       </div>
       <hr>
@@ -1112,6 +1186,13 @@
     <button class="lb-close" id="lbClose" aria-label="关闭">&times;</button>
     <img id="lbImg" src="" alt="">
   </div>
+
+  <!-- BACK TO TOP -->
+  <button class="to-top" id="toTop" type="button" aria-label="返回顶部">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <polyline points="18 15 12 9 6 15"></polyline>
+    </svg>
+  </button>
 
 <script>
   // top notice close
@@ -1137,17 +1218,20 @@
   navScrim?.addEventListener('click', closeNav);
   navMenu?.querySelectorAll('a').forEach(a => a.addEventListener('click', closeNav));
 
-  // scroll progress + nav state
+  // scroll progress + nav state + back-to-top
   const progress = document.getElementById('progress');
   const nav = document.getElementById('nav');
+  const toTop = document.getElementById('toTop');
   function onScroll() {
     const h = document.documentElement;
     const scrolled = h.scrollTop / (h.scrollHeight - h.clientHeight);
     progress.style.width = (scrolled * 100) + '%';
     nav.classList.toggle('scrolled', h.scrollTop > 8);
+    toTop.classList.toggle('show', h.scrollTop > 400);
   }
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
+  toTop?.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 
   // scroll reveal
   const revealObs = new IntersectionObserver((entries) => {
