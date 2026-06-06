@@ -280,6 +280,28 @@
     50% { box-shadow: 0 12px 40px rgba(255,122,24,0.4); }
   }
 
+  /* ---------- HERO OPEN-SOURCE NOTE (soft / honest) ---------- */
+  .hero-note {
+    max-width: 700px; margin: 24px auto 0;
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 15px 24px; border-radius: 16px;
+    background: rgba(255,122,24,0.06);
+    border: 1px solid rgba(255,122,24,0.2);
+    color: #6b4226; font-size: 15.5px; font-weight: 500; line-height: 1.7;
+    text-align: left;
+  }
+  .hero-note .hn-icon {
+    flex-shrink: 0; width: 22px; height: 22px; margin-top: 1px;
+    color: var(--brand);
+  }
+  .hero-note .hn-icon svg { width: 22px; height: 22px; display: block; }
+  .hero-note strong { color: #7a3a07; font-weight: 600; }
+  .hero-note a { color: var(--brand); font-weight: 600; }
+  @media (max-width: 600px) {
+    .hero-note { margin: 18px 14px 0; padding: 12px 16px; font-size: 14px; gap: 9px; }
+    .hero-note .hn-icon, .hero-note .hn-icon svg { width: 19px; height: 19px; }
+  }
+
   /* ---------- TWO-UP GRID ---------- */
   .grid2 {
     display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
@@ -826,17 +848,28 @@
     <div class="eyebrow reveal">Cursor Continue</div>
     <h2 class="reveal d1">持续，<span class="grad-text">不止于此。</span></h2>
     <p class="sub reveal d2">让 Cursor AI 不间断为你工作。</p>
-    <p class="desc reveal d3">通过底部面板与 Cursor 保持连续对话，告别反复手动发送消息。一次配置，长效协作。</p>
+    <p class="desc reveal d3">通过底部面板与 Cursor 保持连续对话，告别反复手动发送消息。一次配置，长效协作——单个账号即可无限使用高级模型。</p>
     <p class="hero-highlight reveal d4">
       <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
         <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .962 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.962 0z"/>
       </svg>
-      理论无限畅享高级模型 · 告别 Token 焦虑
+      理论无限畅享 Cursor 高级模型 · 告别 Token 焦虑 · 单账号可无限畅享
     </p>
     <div class="actions reveal d4">
       <a class="link" href="https://pub-bbf7a7621e4545c7a5e95e00a15d3923.r2.dev/cursorContinue.vsix" download="cursorContinue.vsix">下载插件</a>
       <a class="link" href="#docs">了解使用方法</a>
       <a class="link" href="https://a8.al" target="_blank" rel="noopener">获取卡密</a>
+    </div>
+
+    <div class="hero-note reveal d5" role="note">
+      <span class="hn-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="16" x2="12" y2="12"></line>
+          <line x1="12" y1="8" x2="12.01" y2="8"></line>
+        </svg>
+      </span>
+      <span>我们尊重开源生态：社区中也有优秀的开源实现，<strong>乐于自行配置与维护</strong>的你完全可以按需选择。本插件提供的是<strong>开箱即用、持续更新与一对一支持</strong>的省心体验——<strong>怎么选，始终由你决定</strong>。</span>
     </div>
 
     <div class="mock reveal d5" id="mock">
@@ -989,6 +1022,22 @@
           <img src="img/02.png" alt="Cursor 账号开启超额设置">
           <figcaption>在账号设置中开启超额用量。</figcaption>
         </figure>
+
+        <h4>切换账号</h4>
+        <p>当一个账号额度用尽，或需要在多个 Pro 账号之间轮换使用时，可按以下步骤切换登录账号：</p>
+        <ol>
+          <li>打开 Cursor，点击右上角的<strong>设置</strong>图标（齿轮）进入设置面板。</li>
+          <li>在顶部找到账号区域，点击当前账号后选择「<strong>退出登录（Sign Out）</strong>」。</li>
+          <li>退出后回到登录页，使用<strong>新账号</strong>重新登录（Sign In）。</li>
+          <li>登录完成后，确认新账号已开启「<strong>超额用量</strong>」（参见上方说明）。</li>
+          <li>重新发起对话即可继续使用。</li>
+        </ol>
+        <div class="callout">
+          <strong>提示：</strong>仅在 Cursor 内<strong>退出 / 重新登录</strong>账号，不会影响插件卡密授权与已同步的工作区配置，换号后可直接继续协作。若切换后模型无法连接，请检查代理是否开启（参见<a href="#proxy">关于代理设置</a>）。
+        </div>
+        <div class="callout">
+          <strong class="text-warn">重要：</strong>若你使用「<strong>切号软件</strong>」切换账号，这类工具通常会<strong>重置机器码</strong>。由于卡密为<strong>设备绑定（绑定机器码）</strong>，机器码被重置后原有授权会失效，此时需要<strong>重新激活卡密</strong>（参见<a href="#activate">激活卡密</a>）。
+        </div>
       </section>
 
       <section class="doc-section" id="ide-settings">
