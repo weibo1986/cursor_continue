@@ -280,6 +280,27 @@
     50% { box-shadow: 0 12px 40px rgba(255,122,24,0.4); }
   }
 
+  /* ---------- VERSION BADGE ---------- */
+  .version-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    margin-top: 10px; margin-bottom: 0;
+    padding: 6px 18px; border-radius: 999px;
+    font-size: 15px; font-weight: 600; letter-spacing: 0.2px;
+    color: var(--brand);
+    background: rgba(255,122,24,0.10);
+    border: 1px solid rgba(255,122,24,0.28);
+  }
+  .version-badge::before {
+    content: ""; width: 7px; height: 7px; border-radius: 50%;
+    background: var(--brand);
+    box-shadow: 0 0 6px rgba(255,122,24,0.6);
+    animation: pulse-dot 2s ease-in-out infinite;
+  }
+  @keyframes pulse-dot {
+    0%,100% { opacity: 1; box-shadow: 0 0 6px rgba(255,122,24,0.6); }
+    50% { opacity: .6; box-shadow: 0 0 12px rgba(255,122,24,0.9); }
+  }
+
   /* ---------- HERO OPEN-SOURCE NOTE (soft / honest) ---------- */
   .hero-note {
     max-width: 700px; margin: 24px auto 0;
@@ -848,6 +869,7 @@
     <div class="eyebrow reveal">Cursor Continue</div>
     <h2 class="reveal d1">持续，<span class="grad-text">不止于此。</span></h2>
     <p class="sub reveal d2">让 Cursor AI 不间断为你工作。</p>
+    <p class="version-badge reveal d3">v0.5.9 · 最新版本</p>
     <p class="desc reveal d3">通过底部面板与 Cursor 保持连续对话，告别反复手动发送消息。一次配置，长效协作——单个账号即可无限使用高级模型。</p>
     <p class="hero-highlight reveal d4">
       <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
