@@ -323,6 +323,35 @@
     .hero-note .hn-icon, .hero-note .hn-icon svg { width: 19px; height: 19px; }
   }
 
+  /* ---------- VIDEO SHOWCASE ---------- */
+  .video-showcase {
+    max-width: 1280px; margin: 40px auto 0; padding: 0 22px;
+    text-align: center;
+  }
+  .video-frame {
+    position: relative; margin: 0 auto; max-width: 1180px;
+    border-radius: 24px; overflow: hidden;
+    background: #000;
+    box-shadow: 0 40px 90px rgba(0,0,0,0.22), 0 0 0 1px rgba(0,0,0,0.06);
+    transition: transform .4s var(--ease), box-shadow .4s var(--ease);
+  }
+  .video-frame:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 50px 110px rgba(0,0,0,0.28), 0 0 0 1px rgba(255,122,24,0.25);
+  }
+  .video-frame video {
+    display: block; width: 100%; height: auto;
+    background: #000;
+  }
+  .video-caption {
+    margin-top: 18px; font-size: 15px; color: var(--grey);
+  }
+  @media (max-width: 600px) {
+    .video-showcase { margin: 28px auto 0; padding: 0 14px; }
+    .video-frame { border-radius: 16px; }
+    .video-caption { font-size: 13.5px; margin-top: 12px; }
+  }
+
   /* ---------- TWO-UP GRID ---------- */
   .grid2 {
     display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
@@ -907,6 +936,19 @@
     </div>
   </section>
 
+  <!-- VIDEO SHOWCASE -->
+  <section class="section video-section" style="padding-top:70px;padding-bottom:0;" id="video">
+    <div class="eyebrow reveal">视频演示</div>
+    <h2 class="reveal d1">眼见为实。</h2>
+    <p class="desc reveal d2">一段视频，看懂 Cursor Continue 如何让 AI 持续为你工作。</p>
+    <div class="video-showcase reveal d3">
+      <div class="video-frame">
+        <video id="demoVideo" src="MP4/01.mp4" loop muted playsinline preload="metadata"></video>
+      </div>
+      <p class="video-caption">Cursor Continue 实际使用演示</p>
+    </div>
+  </section>
+
   <!-- TWO-UP TILES -->
   <div class="grid2">
     <div class="tile reveal">
@@ -1459,6 +1501,18 @@
     entries.forEach(e => { if (e.isIntersecting) { mock.classList.add('play'); mockObs.unobserve(mock); } });
   }, { threshold: 0.4 });
   mockObs.observe(mock);
+
+  // demo video: auto play/pause when entering/leaving viewport
+  const demoVideo = document.getElementById('demoVideo');
+  if (demoVideo) {
+    const videoObs = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) demoVideo.play().catch(() => {});
+        else demoVideo.pause();
+      });
+    }, { threshold: 0.45 });
+    videoObs.observe(demoVideo);
+  }
 
   // docs sidebar mobile drawer
   const docsSidebar = document.getElementById('docsSidebar');
