@@ -323,33 +323,164 @@
     .hero-note .hn-icon, .hero-note .hn-icon svg { width: 19px; height: 19px; }
   }
 
-  /* ---------- VIDEO SHOWCASE ---------- */
-  .video-showcase {
-    max-width: 1280px; margin: 40px auto 0; padding: 0 22px;
-    text-align: center;
-  }
-  .video-frame {
-    position: relative; margin: 0 auto; max-width: 1180px;
-    border-radius: 24px; overflow: hidden;
-    background: #000;
-    box-shadow: 0 40px 90px rgba(0,0,0,0.22), 0 0 0 1px rgba(0,0,0,0.06);
-    transition: transform .4s var(--ease), box-shadow .4s var(--ease);
-  }
-  .video-frame:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 50px 110px rgba(0,0,0,0.28), 0 0 0 1px rgba(255,122,24,0.25);
-  }
-  .video-frame video {
-    display: block; width: 100%; height: auto;
-    background: #000;
-  }
+  /* ---------- VIDEO CAPTION ---------- */
   .video-caption {
     margin-top: 18px; font-size: 15px; color: var(--grey);
   }
   @media (max-width: 600px) {
-    .video-showcase { margin: 28px auto 0; padding: 0 14px; }
-    .video-frame { border-radius: 16px; }
     .video-caption { font-size: 13.5px; margin-top: 12px; }
+  }
+
+  /* ---------- 1:1 UI REPLICA (Cursor 底部面板 + 对话区) ---------- */
+  .ui-replica-wrap {
+    max-width: 1280px; margin: 40px auto 0; padding: 0 22px; text-align: center;
+  }
+  .ide-replica {
+    max-width: 1180px; min-height: 520px; margin: 0 auto; text-align: left;
+    display: flex; align-items: stretch;
+    background: #181818; border-radius: 20px; overflow: hidden;
+    box-shadow: 0 40px 90px rgba(0,0,0,0.22), 0 0 0 1px rgba(0,0,0,0.06);
+    transition: transform .4s var(--ease), box-shadow .4s var(--ease);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.45;
+  }
+  .ide-replica:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 50px 110px rgba(0,0,0,0.28), 0 0 0 1px rgba(255,122,24,0.25);
+  }
+  .ide-left { flex: 1 1 59%; min-width: 0; display: flex; flex-direction: column; }
+  .ide-tabs {
+    display: flex; align-items: center; height: 40px; flex-shrink: 0;
+    padding: 0 12px; gap: 2px; border-bottom: 1px solid #242424;
+    overflow-x: auto; scrollbar-width: none;
+  }
+  .ide-tabs::-webkit-scrollbar { display: none; }
+  .ide-tab {
+    padding: 5px 11px; border-radius: 7px;
+    font-size: 12px; color: #8d8d8d; white-space: nowrap;
+  }
+  .ide-tab.active { background: #262627; color: #eaeaea; }
+  .ide-tab-actions {
+    margin-left: auto; display: inline-flex; align-items: center; gap: 12px;
+    color: #9a9a9a; padding-left: 12px;
+  }
+  .ide-tab-actions svg { width: 14px; height: 14px; display: block; }
+  .ide-panel-body { flex: 1; display: flex; padding: 10px 12px 12px; }
+  .ccr-card {
+    flex: 1; display: flex; flex-direction: column; gap: 10px; min-width: 0;
+    background: #1e1e1f; border: 1px solid #2d2d2f; border-radius: 12px;
+    padding: 12px 14px 14px;
+  }
+  .ccr-head { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; }
+  .ccr-logo {
+    width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0;
+    background: #2d2d30; border: 1px solid #404043;
+    display: grid; place-items: center;
+    color: #fff; font-weight: 700; font-size: 13px;
+  }
+  .ccr-name { font-size: 14.5px; font-weight: 700; color: #f2f2f2; }
+  .ccr-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 11px; font-weight: 600; line-height: 1;
+    padding: 4.5px 9px; border-radius: 999px;
+  }
+  .ccr-badge svg { width: 11px; height: 11px; }
+  .ccr-badge.ver { color: #3cd9a8; background: rgba(60,217,168,0.10); border: 1px solid rgba(60,217,168,0.32); }
+  .ccr-badge.buy { color: #f3aa4e; background: rgba(243,170,78,0.10); border: 1px solid rgba(243,170,78,0.32); }
+  .ccr-head-actions { margin-left: auto; display: inline-flex; gap: 8px; }
+  .ccr-btn {
+    display: inline-flex; align-items: center; line-height: 1;
+    font-size: 12px; color: #d8d8d8;
+    background: #2c2c2e; border: 1px solid #3e3e41; border-radius: 7px;
+    padding: 6.5px 13px; white-space: nowrap;
+  }
+  .ccr-btn.primary {
+    color: #fff; font-weight: 600;
+    background: #17a081; border-color: rgba(255,255,255,0.08);
+  }
+  .ccr-status { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .ccr-pill {
+    display: inline-flex; align-items: center; gap: 6px; line-height: 1;
+    font-size: 11.5px; color: #b9b9b9;
+    background: #252527; border: 1px solid #39393c; border-radius: 999px;
+    padding: 5px 11px; white-space: nowrap;
+  }
+  .ccr-pill.run i {
+    width: 7px; height: 7px; border-radius: 50%; background: #34d399;
+    box-shadow: 0 0 6px rgba(52,211,153,0.7);
+    animation: pulse-dot 2s ease-in-out infinite;
+  }
+  .ccr-pill.wait { color: #4ade80; background: rgba(74,222,128,0.10); border-color: rgba(74,222,128,0.30); }
+  .ccr-status-right { margin-left: auto; }
+  .ccr-body {
+    flex: 1; display: flex; flex-direction: column; min-width: 0;
+    background: #1a1a1b; border: 1px solid #2c2c2e; border-radius: 10px;
+    padding: 12px 14px;
+  }
+  .ccr-bt { font-size: 13px; font-weight: 700; color: #ededed; }
+  .ccr-bs { font-size: 11.5px; color: #8d8d8d; margin-top: 3px; }
+  .ccr-input {
+    flex: 1; min-height: 140px; margin-top: 10px; width: 100%; display: block;
+    background: #161617; border: 1px solid #313134; border-radius: 9px;
+    padding: 10px 12px; font-size: 12.5px; color: #dcdcdc;
+    font-family: inherit; line-height: 1.55; resize: none; outline: none;
+    transition: border-color .2s ease, box-shadow .2s ease;
+  }
+  .ccr-input::placeholder { color: #7b7b7b; }
+  .ccr-input:focus { border-color: rgba(23,160,129,0.8); box-shadow: 0 0 0 2.5px rgba(23,160,129,0.16); }
+  .ccr-hint { margin-top: 9px; font-size: 11px; color: #7d7d7d; }
+  .ide-right {
+    flex: 1 1 41%; min-width: 0;
+    border-left: 1px solid #242424;
+    padding: 12px 16px 14px;
+    display: flex; flex-direction: column; gap: 10px; align-items: stretch;
+  }
+  .ccr-chat {
+    flex: 1; min-height: 0; max-height: 520px; overflow-y: auto;
+    display: flex; flex-direction: column; gap: 10px;
+    padding-right: 4px; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.18) transparent;
+  }
+  .ccr-chat::-webkit-scrollbar { width: 7px; }
+  .ccr-chat::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.16); border: none; background-clip: border-box; }
+  .ccr-msg-in { animation: ccrPop .35s var(--ease) both; }
+  @keyframes ccrPop {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: none; }
+  }
+  .ccr-typing { display: inline-flex; align-items: center; gap: 4px; padding: 2px 0; }
+  .ccr-typing i {
+    width: 5px; height: 5px; border-radius: 50%; background: #8f8f8f;
+    animation: ccrBlink 1.2s ease-in-out infinite;
+  }
+  .ccr-typing i:nth-child(2) { animation-delay: .18s; }
+  .ccr-typing i:nth-child(3) { animation-delay: .36s; }
+  @keyframes ccrBlink { 0%,100% { opacity: .25; } 50% { opacity: 1; } }
+  .ccr-user {
+    background: #242426; border: 1px solid #353538; border-radius: 9px;
+    padding: 9px 12px; font-size: 13px; color: #e3e3e3;
+  }
+  .ccr-thought { font-size: 12px; color: #8a8a8a; }
+  .ccr-thought span { color: #a8a8a8; }
+  .ccr-ai { font-size: 13px; color: #d6d6d6; line-height: 1.55; }
+  .ccr-cmd {
+    display: flex; align-items: center; gap: 8px;
+    background: #202022; border: 1px solid #303033; border-radius: 8px;
+    padding: 8.5px 11px; font-size: 12.5px; color: #c6c6c6;
+  }
+  .ccr-cmd svg { width: 13px; height: 13px; color: #8f8f8f; flex-shrink: 0; }
+  .ccr-bin { font-family: "SF Mono", ui-monospace, Consolas, "Courier New", monospace; font-size: 11.5px; color: #8c8c8c; }
+  .ccr-waiting { display: flex; align-items: center; gap: 16px; font-size: 12px; color: #8f8f8f; }
+  .ccr-runbg { color: #bfbfbf; }
+  @media (max-width: 880px) {
+    .ide-replica { flex-direction: column; }
+    .ide-right { border-left: none; border-top: 1px solid #242424; }
+  }
+  @media (max-width: 600px) {
+    .ui-replica-wrap { padding: 0 14px; }
+    .ide-replica { border-radius: 14px; }
+    .ccr-head-actions { margin-left: 0; }
+    .ccr-status-right { margin-left: 0; }
   }
 
   /* ---------- TWO-UP GRID ---------- */
@@ -936,16 +1067,82 @@
     </div>
   </section>
 
-  <!-- VIDEO SHOWCASE -->
+  <!-- INTERACTIVE UI SHOWCASE -->
   <section class="section video-section" style="padding-top:70px;padding-bottom:0;" id="video">
-    <div class="eyebrow reveal">视频演示</div>
-    <h2 class="reveal d1">眼见为实。</h2>
-    <p class="desc reveal d2">一段视频，看懂 Cursor Continue 如何让 AI 持续为你工作。</p>
-    <div class="video-showcase reveal d3">
-      <div class="video-frame">
-        <video id="demoVideo" src="MP4/01.mp4" loop muted playsinline preload="metadata"></video>
+    <div class="eyebrow reveal">工作原理</div>
+    <h2 class="reveal d1">输入一次，循环往复。</h2>
+    <p class="desc reveal d2">在下方面板亲手试试：输入的指令直达右侧对话区，AI 回复后自动回到等待状态，会话永不中断。</p>
+    <!-- 1:1 UI REPLICA -->
+    <div class="ui-replica-wrap reveal d3">
+      <div class="ide-replica" role="img" aria-label="Cursor Continue 面板界面还原">
+        <!-- 左侧：底部面板 -->
+        <div class="ide-left">
+          <div class="ide-tabs">
+            <span class="ide-tab">查询结果</span>
+            <span class="ide-tab active">cursor_continue</span>
+            <span class="ide-tab">问题</span>
+            <span class="ide-tab">输出</span>
+            <span class="ide-tab">调试控制台</span>
+            <span class="ide-tab">终端</span>
+            <span class="ide-tab">端口</span>
+            <span class="ide-tab-actions" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </span>
+          </div>
+          <div class="ide-panel-body">
+            <div class="ccr-card">
+              <div class="ccr-head">
+                <span class="ccr-logo">C</span>
+                <span class="ccr-name">cursor_continue</span>
+                <span class="ccr-badge ver">v0.5.9</span>
+                <span class="ccr-badge buy">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                  购买卡密: A8.AL
+                </span>
+                <span class="ccr-head-actions">
+                  <span class="ccr-btn">设置</span>
+                  <span class="ccr-btn primary">同步配置</span>
+                  <span class="ccr-btn">检测状态</span>
+                </span>
+              </div>
+              <div class="ccr-status">
+                <span class="ccr-pill run"><i></i>运行中</span>
+                <span class="ccr-pill">
+                  <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                  到期 9999/99/99 99:99
+                </span>
+                <span class="ccr-pill wait">等待输入 1</span>
+                <span class="ccr-status-right"><span class="ccr-btn">复制提示词</span></span>
+              </div>
+              <div class="ccr-body">
+                <div class="ccr-bt">等待你的下一步输入</div>
+                <div class="ccr-bs">先查看对话区最新回复。</div>
+                <textarea class="ccr-input" id="ccrInput" rows="3" placeholder="输入下一条消息，可附加图片或引用。" aria-label="输入下一条消息"></textarea>
+                <div class="ccr-hint">回车提交; Shift+Enter 换行</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- 右侧：对话区 -->
+        <div class="ide-right">
+          <div class="ccr-chat" id="ccrChat">
+            <div class="ccr-user">你好</div>
+            <div class="ccr-thought">Thought <span>briefly</span></div>
+            <div class="ccr-ai">你好！我已连接就绪，请告诉我您需要做什么。</div>
+            <div class="ccr-cmd">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
+              <span>等待用户下一步指令</span>
+              <span class="ccr-bin">node</span>
+            </div>
+            <div class="ccr-waiting">
+              <span>Waiting for 1 command to finish</span>
+              <span class="ccr-runbg">Run in background</span>
+            </div>
+          </div>
+        </div>
       </div>
-      <p class="video-caption">Cursor Continue 实际使用演示</p>
+      <p class="video-caption">连续会话面板与 Cursor 对话区，一屏掌握全部状态</p>
     </div>
   </section>
 
@@ -1505,17 +1702,79 @@
   }, { threshold: 0.4 });
   mockObs.observe(mock);
 
-  // demo video: auto play/pause when entering/leaving viewport
-  const demoVideo = document.getElementById('demoVideo');
-  if (demoVideo) {
-    const videoObs = new IntersectionObserver((entries) => {
-      entries.forEach(e => {
-        if (e.isIntersecting) demoVideo.play().catch(() => {});
-        else demoVideo.pause();
-      });
-    }, { threshold: 0.45 });
-    videoObs.observe(demoVideo);
-  }
+  // 1:1 UI replica: interactive demo input（持续对话循环演示）
+  (function () {
+    const input = document.getElementById('ccrInput');
+    const chat = document.getElementById('ccrChat');
+    if (!input || !chat) return;
+
+    const replies = [
+      '收到！任务已开始执行，完成后我会继续等待你的下一条指令。',
+      '好的，正在处理中…无需手动催促，Cursor Continue 会保持会话不断开。',
+      '已完成。我会一直在这里等待，你随时输入下一步即可。',
+      '明白！这就是持续对话——一次配置，长效协作，告别反复点击发送。'
+    ];
+    let replyIdx = 0;
+    let busy = false;
+
+    function el(cls, text) {
+      const d = document.createElement('div');
+      d.className = cls + ' ccr-msg-in';
+      if (text !== undefined) d.textContent = text;
+      return d;
+    }
+    function cmdBox() {
+      const d = el('ccr-cmd');
+      d.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg><span>等待用户下一步指令</span><span class="ccr-bin">node</span>';
+      return d;
+    }
+    function waitingLine() {
+      const d = el('ccr-waiting');
+      d.innerHTML = '<span>Waiting for 1 command to finish</span><span class="ccr-runbg">Run in background</span>';
+      return d;
+    }
+    function scrollChat() { chat.scrollTop = chat.scrollHeight; }
+
+    function send() {
+      const text = input.value.trim();
+      if (!text || busy) return;
+      busy = true;
+      input.value = '';
+
+      // 面板输入送达 → 等待结束，提问转到右侧对话区
+      const lastWaiting = chat.querySelector('.ccr-waiting:last-of-type');
+      if (lastWaiting) lastWaiting.remove();
+      chat.appendChild(el('ccr-user', text));
+      scrollChat();
+
+      // AI 思考
+      const thought = el('ccr-thought');
+      thought.innerHTML = 'Thought <span>briefly</span> <span class="ccr-typing"><i></i><i></i><i></i></span>';
+      setTimeout(() => { chat.appendChild(thought); scrollChat(); }, 450);
+
+      // AI 回复
+      setTimeout(() => {
+        const typing = thought.querySelector('.ccr-typing');
+        if (typing) typing.remove();
+        chat.appendChild(el('ccr-ai', replies[replyIdx % replies.length]));
+        replyIdx++;
+        scrollChat();
+      }, 1700);
+
+      // 回复完成 → 重新进入等待下一条指令状态，循环继续
+      setTimeout(() => {
+        chat.appendChild(cmdBox());
+        chat.appendChild(waitingLine());
+        busy = false;
+        scrollChat();
+        input.focus();
+      }, 2500);
+    }
+
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
+    });
+  })();
 
   // docs sidebar mobile drawer
   const docsSidebar = document.getElementById('docsSidebar');
